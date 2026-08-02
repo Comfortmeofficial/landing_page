@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Mail, MapPin, MessageSquare } from 'lucide-react';
+import { Mail, MessageSquare } from 'lucide-react';
 import { Container } from '@/components/common/Container';
 import { Button } from '@/components/common/Button';
 
