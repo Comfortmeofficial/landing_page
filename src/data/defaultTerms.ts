@@ -11,12 +11,12 @@ export const defaultTerms: PolicyContent = {
         {
           type: 'text',
           content:
-            'Comfort Me (the "Company", "we", "us", or "our") provides an elite, curated platform connecting discerning individuals with bespoke lifestyle experiences and services. By accessing our platform, you agree to be bound by these Terms & Conditions.',
+            'Comfortme (the "Company", "we", "us", or "our") provides an elite, curated platform connecting discerning individuals with bespoke lifestyle experiences and services. By accessing our platform, you agree to be bound by these Terms & Conditions.',
         },
         {
           type: 'text',
           content:
-            'Our service philosophy is built on mutual respect and excellence. These terms are not just legal requirements but a blueprint for how we maintain the premium quality of the Comfort Me ecosystem.',
+            'Our service philosophy is built on mutual respect and excellence. These terms are not just legal requirements but a blueprint for how we maintain the premium quality of the Comfortme ecosystem.',
         },
         {
           type: 'blockquote',
@@ -32,7 +32,7 @@ export const defaultTerms: PolicyContent = {
         {
           type: 'text',
           content:
-            'As a member of the Comfort Me club, you commit to maintaining the integrity of our platform. This includes:',
+            'As a member of the Comfortme club, you commit to maintaining the integrity of our platform. This includes:',
         },
         {
           type: 'bullets',
@@ -99,12 +99,12 @@ export const defaultTerms: PolicyContent = {
         {
           type: 'text',
           content:
-            'While we strive for perfection, Comfort Me acts as a facilitator for premium services. We meticulously vet every partner, but we are not liable for external delays or force majeure events.',
+            'While we strive for perfection, Comfortme acts as a facilitator for premium services. We meticulously vet every partner, but we are not liable for external delays or force majeure events.',
         },
         {
           type: 'text',
           content:
-            'In no event shall Comfort Me be liable for any indirect, incidental, or consequential damages arising from your use of the platform, beyond the total amount paid by you in the preceding 12 months.',
+            'In no event shall Comfortme be liable for any indirect, incidental, or consequential damages arising from your use of the platform, beyond the total amount paid by you in the preceding 12 months.',
         },
       ],
     },

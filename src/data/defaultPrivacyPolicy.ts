@@ -16,7 +16,7 @@ export const defaultPrivacyPolicy: PolicyContent = {
         {
           type: 'text',
           content:
-            'This policy describes the types of information we may collect from you or that you may provide when you visit the Comfort Me platform and our practices for collecting, using, maintaining, protecting, and disclosing that information.',
+            'This policy describes the types of information we may collect from you or that you may provide when you visit the Comfortme platform and our practices for collecting, using, maintaining, protecting, and disclosing that information.',
         },
         {
           type: 'blockquote',
@@ -60,7 +60,7 @@ export const defaultPrivacyPolicy: PolicyContent = {
         {
           type: 'text',
           content:
-            'We use the information we collect to maintain the excellence of the Comfort Me ecosystem and to deliver the seamless service you expect.',
+            'We use the information we collect to maintain the excellence of the Comfortme ecosystem and to deliver the seamless service you expect.',
         },
         {
           type: 'grid',

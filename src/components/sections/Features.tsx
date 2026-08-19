@@ -12,8 +12,8 @@ function FeatureItem({ feature, align }: { feature: Feature; align: 'left' | 'ri
       variants={fadeInUp}
       className={`flex flex-col ${isRight ? 'items-start text-left' : 'items-end text-right'} gap-3`}
     >
-      <div className="inline-flex rounded-xl bg-white/15 p-3">
-        <Icon size={22} className="text-white" />
+      <div className="inline-flex rounded-xl bg-white p-3">
+        <Icon size={22} className="text-[#7CAE7A]" />
       </div>
       <div>
         <h3 className="font-bold text-white mb-1">{feature.title}</h3>
@@ -54,11 +54,11 @@ export function Features() {
           className="text-center mb-16 pt-24"
         >
           <h2 className="text-3xl font-black text-white sm:text-4xl">
-            Built for Modern Commuters
+            Your commute, the way it should be.
           </h2>
           <p className="mt-4 max-w-xl mx-auto text-base text-white/75 leading-relaxed">
-            From the moment you book to the moment you arrive, ComforMe is the system your commute
-            has always needed.
+            ComfortMe is built around the details that matter because a truly comfortable ride
+            starts long before you board the bus.
           </p>
         </motion.div>
 

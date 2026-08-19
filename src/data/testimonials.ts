@@ -15,7 +15,7 @@ export const testimonials: Testimonial[] = [
     role: 'Victoria Island',
     initials: 'TF',
     rating: 5,
-    text: '"I used to leave home much earlier because I never knew what transport would be available. With Comfort Me, I can plan my morning and get to work on time."',
+    text: '"I used to leave home much earlier because I never knew what transport would be available. With Comfortme, I can plan my morning and get to work on time."',
   },
   {
     id: '3',

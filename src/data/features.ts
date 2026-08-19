@@ -12,23 +12,23 @@ export const featuresLeft: Feature[] = [
   {
     id: 'schedule',
     icon: CalendarDays,
-    title: 'Schedule Rides in Advance',
+    title: 'Your seat, secured.',
     description:
-      'Plan your trips ahead of time and secure your seat before the day begins, giving you a stress-free commuting experience.',
+      "Plan your trips ahead and never worry about whether there's space for you. Your seat is waiting before the day even begins.",
   },
   {
     id: 'multi-seat',
     icon: Users,
-    title: 'Reserve Multiple Seats',
+    title: 'Bringing someone along?',
     description:
-      'Easily reserve multiple seats for friends, family members, colleagues, or group trips without making separate bookings.',
+      'Reserve multiple seats in one booking. No separate trips, no extra hassle.',
   },
   {
     id: 'payments',
     icon: CreditCard,
-    title: 'Smart Wallet Payments',
+    title: 'Pay once, ride seamlessly.',
     description:
-      'Top up your wallet once and enjoy seamless, cashless payments for every ride without the hassle of carrying cash.',
+      'Top up your wallet and every ride is taken care of. No cash, no stress, no friction.',
   },
 ];
 
@@ -36,23 +36,23 @@ export const featuresRight: Feature[] = [
   {
     id: 'rental',
     icon: Tag,
-    title: 'Weekend Bus Rentals',
+    title: 'Taking the whole crew?',
     description:
-      'Easily request a bus rental for weekends directly through the platform.',
+      "From corporate outings to friends' trip, book a rental and leave the logistics to us.",
   },
   {
     id: 'discounts',
     icon: Ticket,
-    title: 'Discounts & Promo Coupons',
+    title: 'Ride more, spend less.',
     description:
-      'Apply coupons and special offers to reduce ride costs and get even more value from your daily transportation.',
+      'Apply promo codes and special offers to make every ride even better value.',
   },
   {
     id: 'coasters',
     icon: Bus,
-    title: 'Comfortable & Reliable Buses',
+    title: 'Buses built for comfort.',
     description:
-      'Ride in modern 28+-seater coaster buses operated by verified drivers, ensuring a safe, comfortable, and dependable journey.',
+      'Every ComfortMe bus is modern, air-conditioned, and operated by a professionally trained driver, because the vehicle is part of the experience.',
   },
 ];
 

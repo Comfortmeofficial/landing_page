@@ -1,11 +1,10 @@
-import { MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/common/Button';
 import { fadeInUp, staggerContainer } from '@/lib/utils';
 
 const stats = [
   { value: '28+', label: 'Seater Buses' },
-  { value: '24/7', label: 'Fleet dispatch' },
+  { value: '0', label: 'Unannounced cancellations' },
   { value: '0', label: 'Late arrivals guaranteed' },
 ];
 
@@ -32,8 +31,8 @@ export function Hero() {
           >
             {/* Badge */}
             <motion.div variants={fadeInUp}>
-              <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-1.5 text-sm text-gray-700 dark:text-gray-300 mb-8 shadow-sm">
-                <span className="h-2 w-2 rounded-full bg-secondary-500 flex-shrink-0" />
+              <div className="inline-flex items-center gap-2.5 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-5 py-2.5 text-base text-gray-700 dark:text-gray-300 mb-8 shadow-sm">
+                <span className="h-2.5 w-2.5 rounded-full bg-secondary-500 flex-shrink-0" />
                 Launching in Lagos — Join the waitlist
               </div>
             </motion.div>
@@ -41,18 +40,18 @@ export function Hero() {
             {/* Heading */}
             <motion.h1
               variants={fadeInUp}
-              className="text-3xl font-black tracking-tight text-gray-900 dark:text-white leading-[1.1] lg:text-4xl"
+              className="text-4xl font-black tracking-tight text-gray-900 dark:text-white leading-[1.1] sm:text-5xl lg:text-6xl"
             >
-              You are the priority.{' '}
-              <span className="text-secondary-500">The ride proves it.</span>
+              You are the <span className="text-secondary-500">priority</span>.{' '}
+              The ride proves it.
             </motion.h1>
 
             {/* Subtext */}
             <motion.p
               variants={fadeInUp}
-              className="mt-6 max-w-lg text-base leading-relaxed text-gray-500 dark:text-gray-400"
+              className="mt-6 max-w-xl text-lg leading-relaxed text-gray-500 dark:text-gray-400"
             >
-              Your bus ride, planned your way. Schedule ahead, reserve your seat, and enjoy the journey from the moment you book.
+              Comfort, hospitality, and respect on every ride, without exception. ComfortMe takes care of every detail so all you have to do is show up.
             </motion.p>
 
             {/* Buttons */}
@@ -76,8 +75,8 @@ export function Hero() {
             >
               {stats.map((stat) => (
                 <div key={stat.label}>
-                  <p className="text-3xl font-black text-secondary-500">{stat.value}</p>
-                  <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">{stat.label}</p>
+                  <p className="text-5xl font-black text-amber-500">{stat.value}</p>
+                  <p className="mt-1 text-base text-gray-500 dark:text-gray-400">{stat.label}</p>
                 </div>
               ))}
             </motion.div>
@@ -90,59 +89,12 @@ export function Hero() {
             transition={{ duration: 0.7, ease: 'easeOut', delay: 0.2 }}
             className="relative flex items-center justify-center lg:justify-end"
           >
-            <div className="relative w-full  ">
+            <div className="relative w-full">
               <img
-                src="/bus-img.png"
-                alt="Comfort Me Bus"
-                className=" object-contain drop-shadow-xl scale-x-[1.7] scale-y-[1.65] translate-x-1/2"
+                src="/new_assets/top-illustration.png"
+                alt="Comfortme passenger seated on a bus"
+                className="w-full max-w-[760px] mx-auto object-contain"
               />
-
-              {/* Booking card */}
-              <div className="absolute -bottom-[60%] right-12 w-72 bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 border border-gray-100 dark:border-gray-700 z-10">
-                {/* Boarding */}
-                <div className="flex items-start gap-3">
-                  <div className="mt-1 flex-shrink-0">
-                    <span className="h-2.5 w-2.5 rounded-full bg-secondary-500 block" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] text-gray-400 uppercase tracking-wide">Boarding</p>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">Ajah Motor Park</p>
-                  </div>
-                </div>
-
-                {/* Dotted connector */}
-                <div className="ml-[5px] my-1 flex flex-col gap-[3px]">
-                  {[0, 1, 2].map((i) => (
-                    <span key={i} className="h-1 w-1 rounded-full bg-gray-300 dark:bg-gray-600 block" />
-                  ))}
-                </div>
-
-                {/* Destination */}
-                <div className="flex items-start gap-3">
-                  <div className="mt-1 flex-shrink-0">
-                    <MapPin size={11} className="text-gray-400" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] text-gray-400 uppercase tracking-wide">Destination</p>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">Ozumba Mbadiwe</p>
-                  </div>
-                </div>
-
-                {/* Divider */}
-                <div className="my-3 border-t border-dashed border-gray-200 dark:border-gray-700" />
-
-                {/* Departure + Seat */}
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="text-[10px] text-gray-400">Departure</p>
-                    <p className="text-xs font-semibold text-gray-900 dark:text-white">June 30 12:30PM</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[10px] text-gray-400">Seat Number</p>
-                    <p className="text-xs font-semibold text-gray-900 dark:text-white">Seats 15, 16, 17</p>
-                  </div>
-                </div>
-              </div>
             </div>
           </motion.div>
         </div>

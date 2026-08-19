@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { CheckCircle, ShieldCheck, Tag, Loader2 } from 'lucide-react';
+import { CheckCircle, ShieldCheck, Percent, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Container } from '@/components/common/Container';
 import { Button } from '@/components/common/Button';
@@ -19,7 +19,7 @@ const INITIAL_FORM: WaitlistFormData = {
 };
 
 const inputCls =
-  'w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-secondary-500 focus:outline-none focus:ring-2 focus:ring-secondary-500/20 transition';
+  'w-full rounded-lg border-none bg-gray-100 dark:bg-gray-800 px-4 py-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-secondary-500/30 transition';
 
 const labelCls = 'mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400';
 
@@ -75,14 +75,29 @@ export function Contact() {
             className="flex flex-col gap-8"
           >
             <motion.div variants={fadeInUp}>
-              <p className="text-2xl font-bold text-secondary-500">Comfort Begins</p>
-              <h2 className="text-4xl font-black tracking-tight text-gray-900 dark:text-white sm:text-5xl">
-                Before You Board.
+              <h2 className="text-4xl font-black tracking-tight sm:text-5xl leading-tight">
+                <span className="text-secondary-500">Comfort </span>
+                <span className="relative inline-block text-secondary-500">
+                  Begins
+                  <svg
+                    viewBox="0 0 220 100"
+                    className="pointer-events-none absolute -inset-x-3 -top-4 -bottom-2 w-[calc(100%+1.5rem)] h-[calc(100%+1.5rem)]"
+                    fill="none"
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M110 10C60 4 20 20 16 46c-4 28 34 46 84 44 46-2 86-22 90-46 3-20-20-32-52-36"
+                      stroke="#EC4899"
+                      strokeWidth="7"
+                      strokeLinecap="round"
+                      fill="none"
+                    />
+                  </svg>
+                </span>
+                <br />
+                <span className="text-gray-900 dark:text-white">Before You Board.</span>
               </h2>
-              <p className="mt-4 text-gray-500 dark:text-gray-400 leading-relaxed">
-                Join the ComfortMe waitlist and lock in your early-bird rate before we go public.
-                Structured rides, reliable systems — built around your commute.
-              </p>
             </motion.div>
 
             <motion.div variants={fadeInUp} className="space-y-6">
@@ -90,17 +105,17 @@ export function Contact() {
                 {
                   Icon: ShieldCheck,
                   title: 'Guaranteed Seating',
-                  desc: 'Waitlist members get first dibs on the most popular routes and times.',
+                  desc: 'Join the waitlist and secure your spot on the routes that matter most to you before anyone else.',
                 },
                 {
-                  Icon: Tag,
-                  title: 'Early Birds Coupon',
-                  desc: 'Sign up for early access and enjoy discounted fares when Comfort Me officially launches.',
+                  Icon: Percent,
+                  title: 'A thank you for showing up early',
+                  desc: "Be one of the first on ComfortMe and we'll make sure your first rides cost less. Early access, better fares.",
                 },
               ].map(({ Icon, title, desc }) => (
                 <div key={title} className="flex items-start gap-4">
-                  <div className="flex-shrink-0 rounded-xl bg-secondary-50 dark:bg-secondary-900/30 p-3">
-                    <Icon size={20} className="text-secondary-500" />
+                  <div className="flex-shrink-0 rounded-xl bg-amber-400 p-3">
+                    <Icon size={20} className="text-emerald-800" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 dark:text-white">{title}</h3>
@@ -113,10 +128,10 @@ export function Contact() {
             {/* App store section */}
             <motion.div variants={fadeInUp} className="border-t border-gray-200 dark:border-gray-700 pt-8">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                Be ready to travel with us
+                ComfortMe is coming to your phone.
               </h3>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Comfort Me Mobile App will be available on all platforms very soon
+                The ComfortMe app is launching on iOS and Android very soon. Join the waitlist and we'll notify you the moment it's live.
               </p>
               <div className="mt-4 flex flex-wrap gap-3">
                 {/* Google Play badge */}
@@ -164,7 +179,7 @@ export function Contact() {
                     You're on the list!
                   </h3>
                   <p className="text-gray-500 dark:text-gray-400 text-sm max-w-xs">
-                    We'll reach out as soon as Comfort Me launches in your city.
+                    We'll reach out as soon as Comfortme launches in your city.
                   </p>
                 </div>
               ) : (

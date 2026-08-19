@@ -13,7 +13,7 @@ export function Benefits() {
       <Container className="pt-20 pb-8">
         <SectionHeader
           title="Built for Modern Commuters"
-          subtitle="Whether you're heading to work, school, or an important appointment, Comfort Me gives you the tools to plan, book, and ride without the usual stress."
+          subtitle="Whether you're heading to work, school, or an important appointment, Comfortme gives you the tools to plan, book, and ride without the usual stress."
           light
         />
 
@@ -53,7 +53,7 @@ export function Benefits() {
               <div className="absolute -inset-4 rounded-[3rem] bg-white/10 blur-xl" />
               <img
                 src="/iphone-x.png"
-                alt="Comfort Me app on iPhone"
+                alt="Comfortme app on iPhone"
                 className="relative z-10 w-56 drop-shadow-2xl sm:w-64 lg:w-72"
               />
             </div>

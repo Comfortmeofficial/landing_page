@@ -3,9 +3,9 @@ import type { FAQItem } from '@/types';
 export const faqs: FAQItem[] = [
   {
     id: '1',
-    question: 'How does Comfort Me work?',
+    question: 'How does Comfortme work?',
     answer:
-      'Comfort Me lets you book seats on premium 29-seater coaster buses for your daily commute. Create an account, fund your wallet, select your route and preferred seat, then simply show up and ride. It\'s that simple.',
+      'Comfortme lets you book seats on premium 29-seater coaster buses for your daily commute. Create an account, fund your wallet, select your route and preferred seat, then simply show up and ride. It\'s that simple.',
   },
   {
     id: '2',
@@ -23,7 +23,7 @@ export const faqs: FAQItem[] = [
     id: '4',
     question: 'What happens if I need to cancel my booking?',
     answer:
-      'You can cancel up to 2 hours before your scheduled departure for a full refund to your Comfort Me wallet. Cancellations made within 2 hours of departure are non-refundable.',
+      'You can cancel up to 2 hours before your scheduled departure for a full refund to your Comfortme wallet. Cancellations made within 2 hours of departure are non-refundable.',
   },
   {
     id: '5',

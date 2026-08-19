@@ -52,7 +52,7 @@ export function FAQ() {
       <Container>
         <SectionHeader
           title="Frequently Asked Questions"
-          subtitle="Everything you need to know about Comfort Me before you join."
+          subtitle="Everything you need to know about Comfortme before you join."
         />
 
         <motion.div

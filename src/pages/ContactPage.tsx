@@ -22,7 +22,7 @@ const contactItems = [
   {
     Icon: MessageSquare,
     title: 'Social Channels',
-    detail: 'Sign up for early access and enjoy discounted fares when Comfort Me officially launches.',
+    detail: 'Sign up for early access and enjoy discounted fares when Comfortme officially launches.',
   },
 ];
 
@@ -130,7 +130,7 @@ export function ContactPage() {
             <div className="relative overflow-hidden rounded-2xl mt-2">
               <img
                 src="/9am-meeting.jpg"
-                alt="Comfort Me Headquarters"
+                alt="Comfortme Headquarters"
                 className="w-full h-56 object-cover"
               />
               <div className="absolute inset-0 bg-primary-900/60" />
