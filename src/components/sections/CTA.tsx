@@ -51,9 +51,9 @@ export function CTA() {
             <Button variant="primary" size="lg" className="shadow-lg shadow-secondary-500/20 px-10 py-5 text-base">
               <a href="#contact">Count Me In</a>
             </Button>
-            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 translate-x-1/2 text-[#EC4899]">
-              <Sparkles size={14} className="absolute -top-3 -left-2" />
-              <MousePointer2 size={20} className="rotate-[-8deg]" fill="currentColor" />
+            <span className="pointer-events-none absolute right-1 top-1/2 translate-y-6 translate-x-1/2 text-[#EC4899]">
+              <Sparkles size={26} className="absolute -top-4 -left-4" />
+              <MousePointer2 size={24} className="rotate-[-8deg] -top-16 " fill="currentColor" />
             </span>
           </motion.div>
         </motion.div>
