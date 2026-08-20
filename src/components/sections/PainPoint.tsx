@@ -35,11 +35,11 @@ export function PainPoint() {
           <h2 className="text-4xl font-black text-white leading-tight sm:text-5xl lg:text-6xl">
             Lagos traffic doesn't care about your
           </h2>
-          <h2 className="text-4xl font-black text-secondary-400 leading-tight sm:text-5xl lg:text-6xl mt-2">
+          <h2 className="text-4xl font-black text-[#115ef2] leading-tight sm:text-5xl lg:text-6xl mt-2">
             9 AM meeting.
           </h2>
           <p className="mt-8 text-base leading-relaxed text-white/75 max-w-2xl mx-auto sm:text-lg">
-            Most people accept the chaos as part of the deal. We never did. So we built a better way to move through it — comfortable, reliable, and always on your side.
+            Most people accept the chaos as part of the deal. We never did. So we built something better. A ride that shows up on time, treats you with respect, and makes the journey itself worth something.
           </p>
         </motion.div>
       </div>
