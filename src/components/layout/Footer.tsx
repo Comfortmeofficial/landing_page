@@ -54,7 +54,7 @@ export function Footer() {
 
           {/* Policies */}
           <div className="flex flex-col gap-4">
-            <h3 className="text-xs font-semibold tracking-widest uppercase text-gray-900 dark:text-white">
+            <h3 className="text-xs font-semibold tracking-widest uppercase text-[#0B91F7] dark:text-white">
               Policies
             </h3>
             <ul className="flex flex-col gap-3">
@@ -73,7 +73,7 @@ export function Footer() {
 
           {/* Resources */}
           <div className="flex flex-col gap-4">
-            <h3 className="text-xs font-semibold tracking-widest uppercase text-gray-900 dark:text-white">
+            <h3 className="text-xs font-semibold tracking-widest uppercase text-[#0B91F7] dark:text-white">
               Resources
             </h3>
             <ul className="flex flex-col gap-3">
