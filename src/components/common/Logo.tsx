@@ -19,10 +19,10 @@ export function Logo({ className, light = false }: LogoProps) {
       <span
         className={cn(
           'text-xl font-bold tracking-tight',
-          light ? 'text-white' : 'text-gray-900 dark:text-white',
+          light ? 'text-white' : 'text-[#0B91F7] dark:text-white',
         )}
       >
-        Comfort<span className="text-secondary">Me</span>
+        Comfort<span className="text-[#0B91F7]">Me</span>
       </span>
     </a>
   );

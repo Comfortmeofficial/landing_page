@@ -31,8 +31,8 @@ export function Hero() {
           >
             {/* Badge */}
             <motion.div variants={fadeInUp}>
-              <div className="inline-flex items-center gap-2.5 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-5 py-2.5 text-base text-gray-700 dark:text-gray-300 mb-8 shadow-sm">
-                <span className="h-2.5 w-2.5 rounded-full bg-secondary-500 flex-shrink-0" />
+              <div className="inline-flex items-center gap-2.5 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-5 py-2.5 text-base text-[#0B91F7] dark:text-[#0B91F7] mb-8 shadow-sm">
+                <span className="h-2.5 w-2.5 rounded-full bg-[#0B91F7] flex-shrink-0 text-[#0B91F7]" />
                 Launching in Lagos — Join the waitlist
               </div>
             </motion.div>
@@ -42,7 +42,7 @@ export function Hero() {
               variants={fadeInUp}
               className="text-4xl font-black tracking-tight text-gray-900 dark:text-white leading-[1.1] sm:text-5xl lg:text-6xl"
             >
-              You are the <span className="text-secondary-500">priority</span>.{' '}
+              You are the <span className="text-[#0B91F7]">priority</span>.{' '}
               The ride proves it.
             </motion.h1>
 
@@ -59,7 +59,7 @@ export function Hero() {
               variants={fadeInUp}
               className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center"
             >
-              <Button variant="primary" size="lg">
+              <Button variant="primary" size="lg" className="bg-[#0B91F7] hover:bg-[#0A80E0] text-white">
                 <a href="#contact">Join the Waitlist</a>
               </Button>
               <Button variant="outline" size="lg" onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}>
