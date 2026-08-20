@@ -1,9 +1,10 @@
+import type { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { fadeInUp } from '@/lib/utils';
 
 interface SectionHeaderProps {
-  title: string;
+  title: ReactNode;
   subtitle?: string;
   centered?: boolean;
   light?: boolean;

@@ -9,8 +9,12 @@ export function HowItWorks() {
     <section id="how-it-works" className="bg-gray-100 dark:bg-gray-950 py-24">
       <Container>
         <SectionHeader
-          title="Three Simple Steps"
-          subtitle="Start your premium commute journey in under 60 seconds."
+          title={
+            <>
+              <span className="text-secondary-500">Three steps</span> to a better commute.
+            </>
+          }
+          subtitle="We handle the details so you don't have to. From sign-up to your first ride, the whole process takes minutes."
         />
 
         <motion.div
