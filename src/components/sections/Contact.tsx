@@ -216,7 +216,7 @@ export function Contact() {
                       <label className={labelCls}>Phone</label>
                       <input
                         type="tel"
-                        placeholder="+1 234 567 890"
+                        placeholder="+234 000 000 0000"
                         value={form.phone}
                         onChange={(e) => set('phone', e.target.value)}
                         className={inputCls}
@@ -227,7 +227,7 @@ export function Contact() {
                       <label className={labelCls}>City</label>
                       <input
                         type="text"
-                        placeholder="New York, NY"
+                        placeholder="Lagos, Nigeria"
                         value={form.city}
                         onChange={(e) => set('city', e.target.value)}
                         className={inputCls}
