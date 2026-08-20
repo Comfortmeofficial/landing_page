@@ -30,11 +30,11 @@ export function Rental() {
             </div>
 
             {/* Bus image — bottom-anchored, bleeds off the right edge */}
-            <div className="relative flex-1 flex items-end justify-end self-stretch min-h-[200px] lg:min-h-0">
+            <div className="relative flex-1 flex items-end justify-end self-stretch min-h-[200px] lg:min-h-10">
               <img
                 src="/bus-illustration.png"
                 alt="Comfortme coaster bus"
-                className="absolute right-0 bottom-0 h-full w-auto max-w-none object-contain object-right-bottom"
+                className="absolute right-0 bottom-0 h-full w-auto max-w-full object-contain object-right-bottom"
               />
             </div>
           </div>
