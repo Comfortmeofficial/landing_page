@@ -16,7 +16,10 @@ function StarRating({ count }: { count: number }) {
 
 export function Testimonials() {
   return (
-    <section className="bg-white dark:bg-gray-900 py-24">
+    <section
+      className="bg-white dark:bg-gray-900 py-24 bg-cover bg-center"
+      style={{ backgroundImage: "url('/testimonial_bg.png')" }}
+    >
       <Container>
         {/* Title with "Testers" in blue */}
         <motion.h2
@@ -27,7 +30,7 @@ export function Testimonials() {
           className="text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl"
         >
           What Our Alpha{' '}
-          <span className="text-secondary-500">Testers</span>{' '}
+          <span className="text-[#115ef2]">Testers</span>{' '}
           Say
         </motion.h2>
 
@@ -49,14 +52,14 @@ export function Testimonials() {
                 {t.text}
               </p>
               <div className="flex items-center gap-3 pt-2">
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700">
-                  <span className="text-sm font-bold text-gray-600 dark:text-gray-300">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-900">
+                  <span className="text-sm font-bold text-secondary-500">
                     {t.initials}
                   </span>
                 </div>
                 <div>
                   <p className="text-sm font-bold text-gray-900 dark:text-white">{t.name}</p>
-                  <p className="text-xs text-gray-400">{t.role}</p>
+                  <p className="text-xs text-pink-400">{t.role}</p>
                 </div>
               </div>
             </motion.div>

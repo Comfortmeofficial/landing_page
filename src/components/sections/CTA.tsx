@@ -35,7 +35,7 @@ export function CTA() {
           >
             The commute you
             <br />
-            <span className="text-secondary-500">deserve</span>
+            <span className="text-[#115ef2]">deserve</span>
             <br />
             is almost here.
           </motion.h2>
