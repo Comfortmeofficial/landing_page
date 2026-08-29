@@ -17,7 +17,7 @@ export function Home() {
       <HowItWorks />
       <Rental />
       <Contact />
-      <Testimonials />
+      {/* <Testimonials /> */}
       <FAQ />
       <CTA />
     </main>

@@ -32,7 +32,7 @@ export function PainPoint() {
           transition={{ duration: 0.7 }}
           className="max-w-3xl"
         >
-          <h2 className="text-4xl font-black text-white leading-tight sm:text-5xl lg:text-6xl">
+          <h2 id="benefits" className="text-4xl font-black text-white leading-tight sm:text-5xl lg:text-6xl">
             Lagos traffic doesn't care about your
           </h2>
           <h2 className="text-4xl font-black text-[#115ef2] leading-tight sm:text-5xl lg:text-6xl mt-2">

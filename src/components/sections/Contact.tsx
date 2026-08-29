@@ -63,7 +63,7 @@ export function Contact() {
   }
 
   return (
-    <section id="contact" className="bg-gray-50 dark:bg-gray-900 py-24">
+    <section className="bg-gray-50 dark:bg-gray-900 py-24">
       <Container>
         <div className="grid grid-cols-1 gap-16 lg:grid-cols-2 lg:items-start">
           {/* Left */}
@@ -166,6 +166,7 @@ export function Contact() {
 
           {/* Right — form */}
           <motion.div
+           id="contact"
             variants={fadeInUp}
             initial="hidden"
             whileInView="visible"
