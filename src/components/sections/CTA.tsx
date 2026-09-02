@@ -49,7 +49,7 @@ export function CTA() {
 
           <motion.div variants={fadeInUp} className="relative mt-10 inline-block">
             <Button variant="primary" size="lg" className="shadow-lg shadow-secondary-500/20 px-10 py-5 text-base bg-[#0B91F7]">
-              <a href="#contact">Count Me In</a>
+              <a href="/#contact">Count Me In</a>
             </Button>
             <span className="pointer-events-none absolute right-1 top-1/2 translate-y-6 translate-x-1/2 text-[#EC4899]">
               <Sparkles size={26} className="absolute -top-4 -left-4" />

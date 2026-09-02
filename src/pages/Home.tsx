@@ -4,7 +4,8 @@ import { PainPoint } from '@/components/sections/PainPoint';
 import { HowItWorks } from '@/components/sections/HowItWorks';
 import { Rental } from '@/components/sections/Rental';
 import { Contact } from '@/components/sections/Contact';
-import { Testimonials } from '@/components/sections/Testimonials';
+// Testimonials section is temporarily disabled — content pending.
+// import { Testimonials } from '@/components/sections/Testimonials';
 import { FAQ } from '@/components/sections/FAQ';
 import { CTA } from '@/components/sections/CTA';
 

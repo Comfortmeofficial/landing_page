@@ -55,7 +55,7 @@ export function Header() {
                 </span>
               </div>
               <Button variant="primary" size="md">
-                <a href="#contact">Download the App</a>
+                <a href="/#contact">Download the App</a>
               </Button>
             </div>
 
@@ -96,7 +96,7 @@ export function Header() {
             <Navigation links={navLinks} mobile onLinkClick={() => setIsOpen(false)} />
             <div className="mt-6 border-t border-gray-100 dark:border-gray-800 pt-6">
               <Button variant="primary" size="lg" fullWidth>
-                <a href="#contact" onClick={() => setIsOpen(false)}>Download the App</a>
+                <a href="/#contact" onClick={() => setIsOpen(false)}>Download the App</a>
               </Button>
             </div>
           </motion.div>

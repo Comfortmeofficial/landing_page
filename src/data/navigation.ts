@@ -1,34 +1,11 @@
-import type { NavLink, FooterColumn } from '@/types';
+import type { NavLink } from '@/types';
 
+// The leading "/" matters: Header renders on every route, and a bare
+// "#features" resolves against whatever page you're already on (e.g.
+// /contact#features, which has no such element) rather than Home.
 export const navLinks: NavLink[] = [
-  { label: 'Features', href: '#features' },
-  { label: 'Experience', href: '#benefits' },
-  { label: 'Steps', href: '#how-it-works' },
-  { label: 'Rental', href: '#rental' },
-];
-
-export const footerColumns: FooterColumn[] = [
-  {
-    heading: 'PRODUCT',
-    links: [
-      { label: 'Experience', href: '#benefits' },
-      { label: 'Safety', href: '#' },
-      { label: 'Pricing', href: '#' },
-    ],
-  },
-  {
-    heading: 'COMPANY',
-    links: [
-      { label: 'About', href: '#' },
-      { label: 'Careers', href: '#' },
-      { label: 'Contact', href: '#contact' },
-    ],
-  },
-  {
-    heading: 'LEGAL',
-    links: [
-      { label: 'Terms', href: '#' },
-      { label: 'Privacy', href: '#' },
-    ],
-  },
+  { label: 'Features', href: '/#features' },
+  { label: 'Experience', href: '/#benefits' },
+  { label: 'Steps', href: '/#how-it-works' },
+  { label: 'Rental', href: '/#rental' },
 ];

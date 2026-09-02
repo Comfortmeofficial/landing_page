@@ -51,11 +51,6 @@ export interface WaitlistFormData {
   preference: 'subscription' | 'pay-per-ride' | '';
 }
 
-export interface FooterColumn {
-  heading: string;
-  links: { label: string; href: string }[];
-}
-
 export type PolicyBlock =
   | { type: 'text'; content: string }
   | { type: 'blockquote'; content: string }

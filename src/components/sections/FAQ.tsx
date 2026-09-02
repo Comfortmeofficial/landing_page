@@ -48,7 +48,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
 
 export function FAQ() {
   return (
-    <section className="bg-gray-50 dark:bg-gray-950 py-24">
+    <section id="faq" className="bg-gray-50 dark:bg-gray-950 py-24">
       <Container>
         <SectionHeader
           title="Frequently Asked Questions"
