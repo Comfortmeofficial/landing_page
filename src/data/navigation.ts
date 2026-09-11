@@ -5,7 +5,7 @@ import type { NavLink } from '@/types';
 // /contact#features, which has no such element) rather than Home.
 export const navLinks: NavLink[] = [
   { label: 'Features', href: '/#features' },
-  { label: 'Experience', href: '/#benefits' },
+  { label: 'Experience', href: '/#contact' },
   { label: 'Steps', href: '/#how-it-works' },
   { label: 'Rental', href: '/#rental' },
 ];
