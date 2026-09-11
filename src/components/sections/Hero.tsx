@@ -10,7 +10,7 @@ const stats = [
 
 export function Hero() {
   return (
-    <section className="relative bg-gray-50 dark:bg-gray-900 overflow-x-hidden overflow-y-visible pt-16">
+    <section className="relative bg-gray-50 dark:bg-gray-900 overflow-x-hidden overflow-y-hidden pt-16">
       {/* Decorative blue blobs bottom-right */}
       <div
         aria-hidden
