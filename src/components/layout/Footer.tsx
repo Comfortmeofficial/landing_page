@@ -39,7 +39,7 @@ const socials = [
 export function Footer() {
   return (
     <footer className="bg-gray-100 dark:bg-gray-950">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
+      <div className="max-w-7xl mx-auto px-3 md:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-[2fr_1fr_1fr_2fr]">
           {/* Brand */}
           <div className="flex flex-col gap-4">
@@ -91,7 +91,7 @@ export function Footer() {
           </div>
 
           {/* Social */}
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-6 ">
             <div className="flex items-start justify-between gap-4">
               {socials.map((s) => (
                 <a

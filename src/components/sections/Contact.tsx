@@ -63,7 +63,7 @@ export function Contact() {
   }
 
   return (
-    <section className="bg-gray-50 dark:bg-gray-900 py-24">
+    <section className="relative overflow-hidden bg-gray-50 dark:bg-gray-900 py-24">
       <Container>
         <div className="grid grid-cols-1 gap-16 lg:grid-cols-2 lg:items-start">
           {/* Left */}
