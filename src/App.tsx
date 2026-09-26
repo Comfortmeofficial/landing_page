@@ -6,6 +6,7 @@ import { Home } from '@/pages/Home';
 import { ContactPage } from '@/pages/ContactPage';
 import { PrivacyPolicyPage } from '@/pages/PrivacyPolicyPage';
 import { TermsPage } from '@/pages/TermsPage';
+import { DeleteAccountPage } from '@/pages/DeleteAccountPage';
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
           <Route path="/terms" element={<TermsPage />} />
+          <Route path="/delete-account" element={<DeleteAccountPage />} />
         </Routes>
         <Footer />
       </div>
