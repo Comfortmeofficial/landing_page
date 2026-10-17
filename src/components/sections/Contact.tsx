@@ -182,15 +182,6 @@ export function Contact() {
                   <p className="text-gray-500 dark:text-gray-400 text-sm max-w-xs">
                     We'll reach out as soon as Comfortme launches in your city.
                   </p>
-                  <a
-                    href="https://whatsapp.com/channel/0029VbEENmW7dmeYfD5aN537"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-2 inline-flex items-center gap-2 rounded-lg bg-[#25D366] px-5 py-3 text-sm font-semibold text-white hover:bg-[#1fb956] transition-colors"
-                  >
-                    <MessageCircle size={18} />
-                    Join our WhatsApp channel for updates
-                  </a>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} noValidate className="space-y-4">
@@ -346,6 +337,16 @@ export function Contact() {
                 </form>
               )}
             </div>
+
+            <a
+              href="https://whatsapp.com/channel/0029VbEENmW7dmeYfD5aN537"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-[#25D366]/30 bg-[#25D366]/10 px-5 py-3 text-sm font-semibold text-[#128C7E] dark:text-[#25D366] hover:bg-[#25D366]/20 transition-colors"
+            >
+              <MessageCircle size={18} />
+              Join our WhatsApp channel for updates
+            </a>
           </motion.div>
         </div>
       </Container>
