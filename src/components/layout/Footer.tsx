@@ -30,11 +30,38 @@ const TikTokIcon = () => (
   </svg>
 );
 
+const WhatsAppIcon = () => (
+  <svg viewBox="0 0 24 24" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="12" r="10" fill="#25D366" />
+    <path
+      fill="#fff"
+      d="M12 5.5a6.46 6.46 0 0 0-5.53 9.8L5.5 18.5l3.3-.95A6.46 6.46 0 1 0 12 5.5Zm0 1.3a5.16 5.16 0 0 1 4.37 7.9 5.16 5.16 0 0 1-8.8.33l-.17-.28-1.96.56.58-1.9-.19-.3A5.16 5.16 0 0 1 12 6.8Zm-2.6 2.56c-.14 0-.36.05-.55.27-.19.21-.72.7-.72 1.72 0 1 .74 1.98.84 2.11.1.14 1.44 2.2 3.49 3 1.72.68 2.07.55 2.44.51.37-.04 1.2-.49 1.37-.96.17-.47.17-.87.12-.96-.05-.08-.19-.14-.38-.24-.19-.1-1.2-.59-1.38-.66-.19-.07-.32-.1-.46.1-.14.19-.53.66-.65.8-.12.14-.24.15-.43.05-.19-.1-.83-.31-1.57-.98-.58-.52-.97-1.16-1.08-1.36-.12-.19-.01-.3.09-.4.09-.09.19-.24.29-.36.1-.12.13-.19.2-.33.07-.14.03-.26-.02-.36-.05-.1-.44-1.1-.62-1.5-.16-.4-.33-.34-.46-.35h-.33Z"
+    />
+  </svg>
+);
+
 const socials = [
   { icon: <InstagramIcon />, label: 'FOLLOW US ON INSTAGRAM', handle: 'official@Comfortme', href: '#' },
   { icon: <XIcon />, label: 'FOLLOW US ON X', handle: 'official@Comfortme', href: '#' },
   { icon: <TikTokIcon />, label: 'FOLLOW US ON TIKTOK', handle: 'official@Comfortme', href: '#' },
+  {
+    icon: <WhatsAppIcon />,
+    label: 'JOIN OUR WHATSAPP CHANNEL',
+    handle: 'Comfortme',
+    href: 'https://whatsapp.com/channel/0029VbEENmW7dmeYfD5aN537',
+  },
 ];
+
+// Wraps each label onto two lines for the narrow social-icon column. The
+// original three all read "FOLLOW US ON <platform>" and keep their existing
+// break before the platform name; anything else (e.g. "JOIN OUR WHATSAPP
+// CHANNEL") breaks before its own last word instead.
+function wrapLabel(label: string) {
+  if (label.startsWith('FOLLOW US ON ')) return label.replace('FOLLOW US ON ', 'FOLLOW US ON\n');
+  const words = label.split(' ');
+  const last = words.pop();
+  return `${words.join(' ')}\n${last}`;
+}
 
 export function Footer() {
   return (
@@ -102,6 +129,8 @@ export function Footer() {
                 <a
                   key={s.label}
                   href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex flex-col items-center gap-2 text-center group"
                   aria-label={s.label}
                 >
@@ -109,7 +138,7 @@ export function Footer() {
                     {s.icon}
                   </span>
                   <span className="text-[10px] font-semibold tracking-widest uppercase text-gray-700 dark:text-gray-300 whitespace-pre-line">
-                    {s.label.replace('FOLLOW US ON ', 'FOLLOW US ON\n')}
+                    {wrapLabel(s.label)}
                   </span>
                   <span className="text-xs text-secondary dark:text-secondary-400">{s.handle}</span>
                 </a>

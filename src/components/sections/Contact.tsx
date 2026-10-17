@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { CheckCircle, ShieldCheck, Percent, Loader2 } from 'lucide-react';
+import { CheckCircle, MessageCircle, ShieldCheck, Percent, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Container } from '@/components/common/Container';
 import { Button } from '@/components/common/Button';
@@ -182,6 +182,15 @@ export function Contact() {
                   <p className="text-gray-500 dark:text-gray-400 text-sm max-w-xs">
                     We'll reach out as soon as Comfortme launches in your city.
                   </p>
+                  <a
+                    href="https://whatsapp.com/channel/0029VbEENmW7dmeYfD5aN537"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-flex items-center gap-2 rounded-lg bg-[#25D366] px-5 py-3 text-sm font-semibold text-white hover:bg-[#1fb956] transition-colors"
+                  >
+                    <MessageCircle size={18} />
+                    Join our WhatsApp channel for updates
+                  </a>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} noValidate className="space-y-4">
