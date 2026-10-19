@@ -7,6 +7,8 @@ import { fadeInUp, staggerContainer } from '@/lib/utils';
 import { waitlistApi } from '@/lib/api';
 import type { WaitlistFormData } from '@/types';
 
+const WHATSAPP_CHANNEL_URL = 'https://whatsapp.com/channel/0029VbEENmW7dmeYfD5aN537';
+
 const INITIAL_FORM: WaitlistFormData = {
   fullName: '',
   email: '',
@@ -49,6 +51,10 @@ export function Contact() {
     try {
       await waitlistApi.join(form);
       setSubmitted(true);
+      // Take them straight to the channel instead of making "join the
+      // waitlist" and "join WhatsApp" two separate clicks. The button below
+      // stays as a fallback in case a popup blocker swallows this.
+      window.open(WHATSAPP_CHANNEL_URL, '_blank', 'noopener,noreferrer');
     } catch (err: unknown) {
       const e = err as { response?: { data?: { detail?: string } } };
       setServerError(e.response?.data?.detail ?? 'Something went wrong. Please try again.');
@@ -339,7 +345,7 @@ export function Contact() {
             </div>
 
             <a
-              href="https://whatsapp.com/channel/0029VbEENmW7dmeYfD5aN537"
+              href={WHATSAPP_CHANNEL_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-[#25D366]/30 bg-[#25D366]/10 px-5 py-3 text-sm font-semibold text-[#128C7E] dark:text-[#25D366] hover:bg-[#25D366]/20 transition-colors"
