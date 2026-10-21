@@ -48,14 +48,19 @@ export function Contact() {
     if (!validate()) return;
     setLoading(true);
     setServerError(null);
+    // Opened synchronously, still inside the click's own call stack — most
+    // mobile browsers (Safari especially) only allow window.open to bypass
+    // the popup blocker when it happens directly in response to the user
+    // gesture. Calling it after the `await` below, once the request comes
+    // back, no longer counts as that, so it silently gets blocked with no
+    // tab and no error. Redirecting this blank tab afterwards sidesteps it.
+    const whatsappTab = window.open('', '_blank', 'noopener,noreferrer');
     try {
       await waitlistApi.join(form);
       setSubmitted(true);
-      // Take them straight to the channel instead of making "join the
-      // waitlist" and "join WhatsApp" two separate clicks. The button below
-      // stays as a fallback in case a popup blocker swallows this.
-      window.open(WHATSAPP_CHANNEL_URL, '_blank', 'noopener,noreferrer');
+      if (whatsappTab) whatsappTab.location.href = WHATSAPP_CHANNEL_URL;
     } catch (err: unknown) {
+      whatsappTab?.close();
       const e = err as { response?: { data?: { detail?: string } } };
       setServerError(e.response?.data?.detail ?? 'Something went wrong. Please try again.');
     } finally {
