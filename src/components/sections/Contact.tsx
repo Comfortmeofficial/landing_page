@@ -54,7 +54,15 @@ export function Contact() {
     // gesture. Calling it after the `await` below, once the request comes
     // back, no longer counts as that, so it silently gets blocked with no
     // tab and no error. Redirecting this blank tab afterwards sidesteps it.
-    const whatsappTab = window.open('', '_blank', 'noopener,noreferrer');
+    //
+    // No "noopener" feature here on purpose: passing it makes window.open
+    // return null instead of a usable handle, which is exactly what left
+    // this tab stuck on about:blank before — nothing held a reference to
+    // redirect it. Clearing .opener by hand below gets the same "the
+    // WhatsApp tab can't reach back into this page" protection without
+    // losing that handle.
+    const whatsappTab = window.open('', '_blank');
+    if (whatsappTab) whatsappTab.opener = null;
     try {
       await waitlistApi.join(form);
       setSubmitted(true);
