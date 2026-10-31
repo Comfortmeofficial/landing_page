@@ -69,3 +69,95 @@ export interface PolicyContent {
   updatedAt: string;
   sections: PolicySection[];
 }
+
+// ─── Guest ticket purchase ──────────────────────────────────────────────
+
+export interface Location {
+  id: number;
+  name: string;
+  state: string;
+}
+
+export interface Destination {
+  id: number;
+  name: string;
+  state: string;
+}
+
+export interface Stop {
+  id: number;
+  name: string;
+  state: string;
+}
+
+export interface RouteStop {
+  id: number;
+  stop_order: number;
+  fare: number | null;
+  stop: Stop;
+}
+
+export interface Route {
+  id: number;
+  name: string;
+  location: Location;
+  destination: Destination;
+  stops: RouteStop[];
+  distance_km: number;
+}
+
+export interface Ride {
+  id: number;
+  route_id: number;
+  driver_name: string;
+  bus_plate: string;
+  bus_model: string;
+  departure_time: string;
+  fare: number;
+  total_seats: number;
+  booked_seats: number;
+  status: 'scheduled' | 'active' | 'completed' | 'cancelled';
+  route: Route;
+  driver_row?: number | null;
+  driver_col?: number | null;
+}
+
+export interface RideSeat {
+  id: number;
+  ride_id: number;
+  seat_number: string;
+  row: number;
+  col: number;
+  seat_type: 'standard' | 'premium' | 'disabled';
+  status: 'available' | 'booked';
+}
+
+export interface GuestCheckoutForm {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+}
+
+export type GuestSessionResponse =
+  | { requires_verification: true }
+  | { requires_verification: false; access_token: string; refresh_token: string; user_id: number };
+
+export type PaymentMethod = 'debit_card' | 'bank_transfer';
+
+export interface PayBookingResult {
+  success: boolean;
+  message: string;
+  reference: string;
+  amount?: number;
+  discount?: number;
+  authorization_url?: string;
+  booking_id?: number;
+}
+
+export interface PaystackVerifyResult {
+  reference: string;
+  amount: number;
+  status: string;
+  booking_id?: number;
+}

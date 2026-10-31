@@ -54,6 +54,9 @@ export function Header() {
                   {isDark ? 'Switch to light mode' : 'Switch to dark mode'}
                 </span>
               </div>
+              <Button variant="outline" size="md">
+                <a href="/book">Book a Trip</a>
+              </Button>
               <Button variant="primary" size="md">
                 <a href="/#contact">Download the App</a>
               </Button>
@@ -94,7 +97,10 @@ export function Header() {
             className="fixed inset-0 top-16 z-40 bg-white dark:bg-gray-900 px-4 pt-6 pb-8 md:hidden"
           >
             <Navigation links={navLinks} mobile onLinkClick={() => setIsOpen(false)} />
-            <div className="mt-6 border-t border-gray-100 dark:border-gray-800 pt-6">
+            <div className="mt-6 border-t border-gray-100 dark:border-gray-800 pt-6 space-y-3">
+              <Button variant="outline" size="lg" fullWidth>
+                <a href="/book" onClick={() => setIsOpen(false)}>Book a Trip</a>
+              </Button>
               <Button variant="primary" size="lg" fullWidth>
                 <a href="/#contact" onClick={() => setIsOpen(false)}>Download the App</a>
               </Button>
