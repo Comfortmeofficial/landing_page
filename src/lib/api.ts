@@ -1,16 +1,15 @@
 import axios from 'axios';
 import type {
   Booking,
-  Destination,
   GuestCheckoutForm,
   GuestSessionResponse,
-  Location,
   PayBookingResult,
   PaymentMethod,
   PaystackVerifyResult,
   PolicyContent,
   Ride,
   RideSeat,
+  Route,
   WaitlistFormData,
 } from '@/types';
 import { clearGuestSession, getGuestSession, saveGuestSession } from './guestSession';
@@ -90,8 +89,12 @@ export const accountDeletionApi = {
 // ─── Guest ticket purchase ──────────────────────────────────────────────
 
 export const routesApi = {
-  getLocations: () => api.get<Location[]>('/api/v1/locations').then((r) => r.data),
-  getDestinations: () => api.get<Destination[]>('/api/v1/destinations').then((r) => r.data),
+  // Active, real location->destination pairs to browse/search through, as
+  // opposed to picking a pickup and a destination independently — this is
+  // GET /api/v1/routes, not derived from separate locations/destinations
+  // listings.
+  getRoutes: () =>
+    api.get<Route[]>('/api/v1/routes', { params: { status: 'active', limit: 200 } }).then((r) => r.data),
 };
 
 export const bookingApi = {

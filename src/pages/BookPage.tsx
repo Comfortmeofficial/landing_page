@@ -1,12 +1,12 @@
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { ChevronLeft, Loader2, MapPin, ShieldCheck, Users } from 'lucide-react';
+import { ChevronLeft, Loader2, MapPin, Search, ShieldCheck, Users } from 'lucide-react';
 import { Container } from '@/components/common/Container';
 import { Button } from '@/components/common/Button';
 import { SeatGrid } from '@/components/booking/SeatGrid';
 import { bookingApi, guestAuthApi, paymentApi, routesApi } from '@/lib/api';
 import { getGuestSession, saveGuestSession } from '@/lib/guestSession';
-import type { GuestCheckoutForm, PaymentMethod, Ride, RideSeat } from '@/types';
+import type { GuestCheckoutForm, PaymentMethod, Ride, RideSeat, Route } from '@/types';
 
 const inputCls =
   'w-full rounded-lg border-none bg-gray-100 dark:bg-gray-800 px-4 py-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-secondary-500/30 transition';
@@ -78,6 +78,7 @@ export function BookPage() {
   const [error, setError] = useState<string | null>(null);
 
   // Search
+  const [routeQuery, setRouteQuery] = useState('');
   const [location, setLocation] = useState('');
   const [destination, setDestination] = useState('');
   const [results, setResults] = useState<Ride[]>([]);
@@ -99,8 +100,10 @@ export function BookPage() {
   // Payment
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('debit_card');
 
-  const { data: locations = [] } = useQuery({ queryKey: ['locations'], queryFn: routesApi.getLocations });
-  const { data: destinations = [] } = useQuery({ queryKey: ['destinations'], queryFn: routesApi.getDestinations });
+  const { data: routes = [], isLoading: routesLoading } = useQuery({
+    queryKey: ['routes'],
+    queryFn: routesApi.getRoutes,
+  });
 
   const { data: seats = [], isLoading: seatsLoading } = useQuery({
     queryKey: ['seats', selectedRide?.id],
@@ -109,13 +112,31 @@ export function BookPage() {
   });
 
   const searchMutation = useMutation({
-    mutationFn: () => bookingApi.search({ location: location || undefined, destination }),
+    mutationFn: (payload: { location: string; destination: string }) => bookingApi.search(payload),
     onSuccess: (rides) => {
       setResults(rides);
       setStep('results');
     },
     onError: (err) => setError(apiErrorMessage(err, 'Could not search for trips. Please try again.')),
   });
+
+  const selectRoute = (route: Route) => {
+    setError(null);
+    setLocation(route.location.name);
+    setDestination(route.destination.name);
+    searchMutation.mutate({ location: route.location.name, destination: route.destination.name });
+  };
+
+  const filteredRoutes = useMemo(() => {
+    const q = routeQuery.trim().toLowerCase();
+    if (!q) return routes;
+    return routes.filter(
+      (r) =>
+        r.location.name.toLowerCase().includes(q) ||
+        r.destination.name.toLowerCase().includes(q) ||
+        r.name.toLowerCase().includes(q),
+    );
+  }, [routes, routeQuery]);
 
   const selectedStop = selectedRide?.route.stops.find((s) => s.stop.id === pickupStopId) ?? null;
   const effectiveFare = selectedStop?.fare ?? selectedRide?.fare ?? 0;
@@ -193,11 +214,6 @@ export function BookPage() {
     onError: (err) => setError(apiErrorMessage(err, 'Payment could not be started. Please try again.')),
   });
 
-  const destinationOptions = useMemo(
-    () => destinations.filter((d) => !location || d.name !== location),
-    [destinations, location],
-  );
-
   return (
     <main className="bg-white dark:bg-gray-900 pt-28 pb-24 min-h-screen">
       <Container>
@@ -226,53 +242,50 @@ export function BookPage() {
           )}
 
           {step === 'search' && (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                setError(null);
-                searchMutation.mutate();
-              }}
-              className="space-y-5 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-8 shadow-sm"
-            >
-              <div>
-                <label className={labelCls}>From (optional)</label>
-                <select value={location} onChange={(e) => setLocation(e.target.value)} className={inputCls}>
-                  <option value="">Any pickup location</option>
-                  {locations.map((l) => (
-                    <option key={l.id} value={l.name}>
-                      {l.name}
-                    </option>
-                  ))}
-                </select>
+            <div className="space-y-4">
+              <div className="relative">
+                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  value={routeQuery}
+                  onChange={(e) => setRouteQuery(e.target.value)}
+                  placeholder="Search by city, e.g. Lagos or Abuja"
+                  className={`${inputCls} pl-11`}
+                  autoFocus
+                />
               </div>
-              <div>
-                <label className={labelCls}>To</label>
-                <select
-                  value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                  className={inputCls}
-                  required
-                >
-                  <option value="" disabled>
-                    Select a destination
-                  </option>
-                  {destinationOptions.map((d) => (
-                    <option key={d.id} value={d.name}>
-                      {d.name}
-                    </option>
+
+              {routesLoading ? (
+                <div className="flex justify-center py-12">
+                  <Loader2 className="animate-spin text-secondary-500" />
+                </div>
+              ) : filteredRoutes.length === 0 ? (
+                <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-12">
+                  {routeQuery ? 'No routes match your search.' : 'No routes are available right now.'}
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {filteredRoutes.map((route) => (
+                    <button
+                      key={route.id}
+                      disabled={searchMutation.isPending}
+                      onClick={() => selectRoute(route)}
+                      className="w-full flex items-center gap-4 rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 text-left shadow-sm hover:border-secondary-300 transition-colors disabled:opacity-60"
+                    >
+                      <MapPin size={20} className="text-secondary-500 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-gray-900 dark:text-white truncate">
+                          {route.location.name} &rarr; {route.destination.name}
+                        </p>
+                        <p className="text-xs text-gray-400 mt-0.5">{route.distance_km} km</p>
+                      </div>
+                      {searchMutation.isPending && location === route.location.name && destination === route.destination.name ? (
+                        <Loader2 size={18} className="animate-spin text-secondary-500 shrink-0" />
+                      ) : null}
+                    </button>
                   ))}
-                </select>
-              </div>
-              <Button type="submit" variant="primary" size="lg" fullWidth disabled={searchMutation.isPending || !destination}>
-                {searchMutation.isPending ? (
-                  <>
-                    <Loader2 size={18} className="animate-spin" /> Searching…
-                  </>
-                ) : (
-                  'Find Trips'
-                )}
-              </Button>
-            </form>
+                </div>
+              )}
+            </div>
           )}
 
           {step === 'results' && (
