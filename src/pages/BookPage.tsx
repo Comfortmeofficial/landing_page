@@ -536,7 +536,7 @@ export function BookPage() {
                 )}
               </Button>
               <p className="text-center text-xs text-gray-400">
-                You'll be taken to Paystack's secure checkout to complete payment.
+                You'll be redirected to our secure checkout partner to complete payment.
               </p>
             </div>
           )}

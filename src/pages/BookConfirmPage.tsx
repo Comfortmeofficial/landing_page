@@ -27,7 +27,11 @@ export function BookConfirmPage() {
   const [status, setStatus] = useState<Status>('verifying');
   const [error, setError] = useState<string | null>(null);
 
-  const reference = searchParams.get('reference') ?? searchParams.get('trxref');
+  // 'reference'/'trxref' are Paystack's redirect param names; 'tx_ref' is
+  // Flutterwave's — which gateway processed this payment is an invisible,
+  // admin-controlled choice, so this page needs to recognize both.
+  const reference =
+    searchParams.get('reference') ?? searchParams.get('trxref') ?? searchParams.get('tx_ref');
 
   useEffect(() => {
     if (!reference) {
