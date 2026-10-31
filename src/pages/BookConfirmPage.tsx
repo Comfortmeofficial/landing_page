@@ -13,6 +13,10 @@ function apiErrorMessage(err: unknown, fallback: string): string {
 
 type Status = 'verifying' | 'success' | 'failed';
 
+function viewTicketHref(reference: string | null) {
+  return reference ? `/book/ticket?reference=${encodeURIComponent(reference)}` : '/book/ticket';
+}
+
 // Where Paystack's hosted checkout sends the browser back to, carrying
 // ?reference= (or ?trxref=, the same two keys the mobile app's
 // PaystackCheckout WebView already looks for) — this is the web
@@ -23,8 +27,9 @@ export function BookConfirmPage() {
   const [status, setStatus] = useState<Status>('verifying');
   const [error, setError] = useState<string | null>(null);
 
+  const reference = searchParams.get('reference') ?? searchParams.get('trxref');
+
   useEffect(() => {
-    const reference = searchParams.get('reference') ?? searchParams.get('trxref');
     if (!reference) {
       setStatus('failed');
       setError('No payment reference was returned.');
@@ -32,7 +37,20 @@ export function BookConfirmPage() {
     }
     paymentApi
       .verify(reference)
-      .then(() => {
+      .then((result) => {
+        // A failed/pending/abandoned payment still comes back as a normal
+        // 200 here (Paystack's own status, not an HTTP error) — booking_id
+        // is only ever set on the response once a real booking was created,
+        // so its absence is the actual signal, not a thrown error.
+        if (!result.booking_id) {
+          setStatus('failed');
+          setError(
+            result.status && result.status !== 'success'
+              ? `Payment ${result.status}. You have not been charged a booking.`
+              : 'We could not confirm your payment. If you were charged, contact support.',
+          );
+          return;
+        }
         setStatus('success');
         clearGuestSession();
       })
@@ -63,6 +81,9 @@ export function BookConfirmPage() {
                 Check your email for your ticket and receipt — your QR code is inside it.
               </p>
               <Button variant="primary" size="lg" fullWidth className="mt-8">
+                <a href={viewTicketHref(reference)}>View my ticket</a>
+              </Button>
+              <Button variant="outline" size="lg" fullWidth className="mt-3">
                 <a href="/">Back to home</a>
               </Button>
             </>

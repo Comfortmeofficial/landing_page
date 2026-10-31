@@ -119,6 +119,11 @@ export function Footer() {
                   Contact Us
                 </Link>
               </li>
+              <li>
+                <Link to="/book/ticket" className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                  Find My Ticket
+                </Link>
+              </li>
             </ul>
           </div>
 

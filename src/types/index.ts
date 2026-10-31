@@ -161,3 +161,16 @@ export interface PaystackVerifyResult {
   status: string;
   booking_id?: number;
 }
+
+export interface Booking {
+  id: number;
+  reference: string;
+  group_reference: string;
+  seat_number: string;
+  final_amount: number;
+  payment_method: string;
+  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+  is_on_board: boolean;
+  ride: Ride;
+  created_at: string;
+}

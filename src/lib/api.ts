@@ -1,5 +1,6 @@
 import axios from 'axios';
 import type {
+  Booking,
   Destination,
   GuestCheckoutForm,
   GuestSessionResponse,
@@ -12,7 +13,7 @@ import type {
   RideSeat,
   WaitlistFormData,
 } from '@/types';
-import { getGuestSession } from './guestSession';
+import { clearGuestSession, getGuestSession, saveGuestSession } from './guestSession';
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL ?? '',
@@ -21,6 +22,41 @@ export const api = axios.create({
   },
   timeout: 10_000,
 });
+
+// The guest's access token is short-lived (15 minutes) — fine for a normal
+// checkout, but someone who steps away mid-flow and comes back would
+// otherwise hit a 401 on whatever they do next with no way to recover
+// short of starting over. Mirrors customer_mobile_app's own refresh-on-401
+// interceptor: only acts on a request that actually carried a guest
+// session's Authorization header (so it never touches the public endpoints
+// — waitlist, policies, account deletion — this same client also serves),
+// and only retries once per request to avoid looping on a truly dead
+// refresh token.
+api.interceptors.response.use(
+  (res) => res,
+  async (error) => {
+    const original = error.config;
+    const hadAuthHeader = !!original?.headers?.Authorization;
+    if (error.response?.status === 401 && hadAuthHeader && !original._retry) {
+      original._retry = true;
+      const session = getGuestSession();
+      if (session) {
+        try {
+          const { data } = await axios.post(`${api.defaults.baseURL}/api/v1/auth/refresh`, {
+            refresh_token: session.refreshToken,
+          });
+          const tokens = data.data as { access_token: string; refresh_token: string };
+          saveGuestSession({ ...session, accessToken: tokens.access_token, refreshToken: tokens.refresh_token });
+          original.headers.Authorization = `Bearer ${tokens.access_token}`;
+          return api(original);
+        } catch {
+          clearGuestSession();
+        }
+      }
+    }
+    return Promise.reject(error);
+  },
+);
 
 export const policyApi = {
   getPrivacy: () => api.get<PolicyContent>('/api/v1/policies/privacy'),
@@ -111,4 +147,14 @@ export const paymentApi = {
     api
       .post<PaystackVerifyResult>(`/api/v1/payment-hub/verify/${reference}`, undefined, { headers: authHeader() })
       .then((r) => r.data),
+};
+
+// Looking up a ticket later needs no login — the group reference from the
+// confirmation email (or the payment reference, which is the same value;
+// every booking created in one purchase shares it as its group_reference)
+// is itself the unguessable, bearer-token-like credential. Public endpoint,
+// no Authorization header.
+export const ticketApi = {
+  getByReference: (reference: string) =>
+    api.get<Booking[]>(`/api/v1/bookings/group/${reference}`).then((r) => r.data),
 };
