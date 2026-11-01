@@ -114,7 +114,6 @@ export const guestAuthApi = {
         first_name: data.firstName,
         last_name: data.lastName,
         email: data.email,
-        phone: data.phone,
       })
       .then((r) => r.data),
   requestCode: (email: string) =>

@@ -136,7 +136,6 @@ export interface GuestCheckoutForm {
   firstName: string;
   lastName: string;
   email: string;
-  phone: string;
 }
 
 export type GuestSessionResponse =

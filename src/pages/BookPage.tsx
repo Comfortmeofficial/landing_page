@@ -93,7 +93,6 @@ export function BookPage() {
     firstName: '',
     lastName: '',
     email: '',
-    phone: '',
   });
   const [otp, setOtp] = useState('');
 
@@ -477,17 +476,6 @@ export function BookPage() {
                   required
                 />
                 <p className="mt-1 text-xs text-gray-400">Your ticket and receipt go here.</p>
-              </div>
-              <div>
-                <label className={labelCls}>Phone</label>
-                <input
-                  type="tel"
-                  className={inputCls}
-                  placeholder="+234 000 000 0000"
-                  value={guestForm.phone}
-                  onChange={(e) => setGuestForm((f) => ({ ...f, phone: e.target.value }))}
-                  required
-                />
               </div>
               <Button type="submit" variant="primary" size="lg" fullWidth disabled={startSessionMutation.isPending}>
                 {startSessionMutation.isPending ? (
