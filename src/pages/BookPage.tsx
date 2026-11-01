@@ -36,6 +36,7 @@ interface BookingLeg {
   ride: Ride;
   seats: RideSeat[];
   pickupStopId: number | null;
+  dropoffStopId: number | null;
   farePerSeat: number;
 }
 
@@ -43,6 +44,8 @@ interface BookingLeg {
 // final summary — onRemove is omitted on the pay step, where a leg can no
 // longer be dropped.
 function LegRow({ leg, onRemove }: { leg: BookingLeg; onRemove?: () => void }) {
+  const pickupName = leg.ride.route.stops.find((s) => s.stop.id === leg.pickupStopId)?.stop.name;
+  const dropoffName = leg.ride.route.stops.find((s) => s.stop.id === leg.dropoffStopId)?.stop.name;
   return (
     <div className="flex items-center justify-between gap-3 rounded-lg bg-gray-50 dark:bg-gray-900/40 px-4 py-3">
       <div className="min-w-0">
@@ -53,6 +56,12 @@ function LegRow({ leg, onRemove }: { leg: BookingLeg; onRemove?: () => void }) {
           {formatDateTime(leg.ride.departure_time)} &middot; Seat{leg.seats.length > 1 ? 's' : ''}:{' '}
           {leg.seats.map((s) => s.seat_number).join(', ')}
         </p>
+        {(pickupName || dropoffName) && (
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {pickupName ? `Board at ${pickupName}` : 'Board at default stop'}
+            {dropoffName ? ` · Off at ${dropoffName}` : ''}
+          </p>
+        )}
       </div>
       <div className="flex items-center gap-3 shrink-0">
         <span className="text-sm font-semibold text-gray-900 dark:text-white">
@@ -128,6 +137,7 @@ export function BookPage() {
   const [selectedRide, setSelectedRide] = useState<Ride | null>(null);
   const [selectedSeats, setSelectedSeats] = useState<RideSeat[]>([]);
   const [pickupStopId, setPickupStopId] = useState<number | null>(null);
+  const [dropoffStopId, setDropoffStopId] = useState<number | null>(null);
 
   // Trips already committed to this purchase (a return trip, say) — a
   // guest checkout has no account to come back to later, so everything
@@ -229,10 +239,36 @@ export function BookPage() {
     );
   }, [routeGroups, routeQuery]);
 
-  const selectedStop = selectedRide?.route.stops.find((s) => s.stop.id === pickupStopId) ?? null;
-  const effectiveFare = selectedStop?.fare ?? selectedRide?.fare ?? 0;
+  const selectedPickupStop = selectedRide?.route.stops.find((s) => s.stop.id === pickupStopId) ?? null;
+  const selectedDropoffStop = selectedRide?.route.stops.find((s) => s.stop.id === dropoffStopId) ?? null;
+  // route_stops.fare means "cost to ride from this stop to the route's
+  // final destination" (it replaces the base fare, never adds to it) — so
+  // a pickup->dropoff segment fare is simply the difference between the
+  // two: pickupValue already covers "pickup to the end", dropoffValue
+  // covers "dropoff to the end", and the remainder is "pickup to dropoff".
+  // Riding to the route's own final destination (no dropoff stop chosen)
+  // is dropoffValue = 0, which reduces this to exactly the pre-dropoff
+  // behavior. Clamped at 0 defensively in case stop fares aren't entered
+  // consistently (never actually negative in the normal case).
+  const pickupValue = selectedPickupStop?.fare ?? selectedRide?.fare ?? 0;
+  const dropoffValue = selectedDropoffStop?.fare ?? 0;
+  const effectiveFare = Math.max(pickupValue - dropoffValue, 0);
   const currentLegFare = effectiveFare * Math.max(selectedSeats.length, 1);
   const legsTotalFare = legs.reduce((sum, l) => sum + l.farePerSeat * l.seats.length, 0);
+
+  // A drop-off chosen before the pickup moved no longer makes sense once
+  // the pickup changes to something further along the route — reset it
+  // rather than risk a stale, invalid (or negative-fare) combination.
+  const selectPickupStop = (id: number | null) => {
+    setPickupStopId(id);
+    setDropoffStopId(null);
+  };
+
+  // Only stops downstream of the chosen pickup (by stop_order) are valid
+  // drop-off points — "Final Destination" (no stop chosen) is always valid.
+  const validDropoffStops =
+    selectedRide?.route.stops.filter((s) => !selectedPickupStop || s.stop_order > selectedPickupStop.stop_order) ??
+    [];
 
   const toggleSeat = (seat: RideSeat) => {
     setSelectedSeats((prev) =>
@@ -240,12 +276,18 @@ export function BookPage() {
     );
   };
 
-  // Commits the ride/seats/stop currently being picked as a leg of this
+  // Commits the ride/seats/stops currently being picked as a leg of this
   // purchase — de-duped by ride id (picking the same ride again just
   // replaces the earlier entry), same as the mobile app's own cart.
   const commitCurrentLeg = (): BookingLeg[] => {
     if (!selectedRide || selectedSeats.length === 0) return legs;
-    const leg: BookingLeg = { ride: selectedRide, seats: selectedSeats, pickupStopId, farePerSeat: effectiveFare };
+    const leg: BookingLeg = {
+      ride: selectedRide,
+      seats: selectedSeats,
+      pickupStopId,
+      dropoffStopId,
+      farePerSeat: effectiveFare,
+    };
     const next = [...legs.filter((l) => l.ride.id !== selectedRide.id), leg];
     setLegs(next);
     return next;
@@ -305,6 +347,7 @@ export function BookPage() {
           ride_id: l.ride.id,
           seat_numbers: l.seats.map((s) => s.seat_number),
           pickup_stop_id: l.pickupStopId,
+          dropoff_stop_id: l.dropoffStopId,
         })),
         amount: legsTotalFare,
         payment_method: paymentMethod,
@@ -439,6 +482,7 @@ export function BookPage() {
                       setSelectedRide(ride);
                       setSelectedSeats([]);
                       setPickupStopId(null);
+                      setDropoffStopId(null);
                       setStep('seats');
                     }}
                     className="w-full flex items-center gap-4 rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 text-left shadow-sm hover:border-secondary-300 transition-colors"
@@ -480,7 +524,7 @@ export function BookPage() {
                   <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
                     <button
                       type="button"
-                      onClick={() => setPickupStopId(null)}
+                      onClick={() => selectPickupStop(null)}
                       className={`w-full flex items-center justify-between gap-3 rounded-lg border-2 px-4 py-3 text-left text-sm transition-colors ${
                         pickupStopId === null
                           ? 'border-secondary-500 bg-secondary-50 dark:bg-secondary-900/20'
@@ -498,7 +542,7 @@ export function BookPage() {
                       <button
                         key={rs.id}
                         type="button"
-                        onClick={() => setPickupStopId(rs.stop.id)}
+                        onClick={() => selectPickupStop(rs.stop.id)}
                         className={`w-full flex items-center justify-between gap-3 rounded-lg border-2 px-4 py-3 text-left text-sm transition-colors ${
                           pickupStopId === rs.stop.id
                             ? 'border-secondary-500 bg-secondary-50 dark:bg-secondary-900/20'
@@ -511,6 +555,49 @@ export function BookPage() {
                         </span>
                       </button>
                     ))}
+                  </div>
+                </div>
+              )}
+
+              {selectedRide.route.stops.length > 0 && (
+                <div>
+                  <label className={labelCls}>Drop-off Location</label>
+                  <p className="mb-2 -mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    Getting off before {selectedRide.route.destination.name}? Choose where, and the fare adjusts.
+                  </p>
+                  <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                    <button
+                      type="button"
+                      onClick={() => setDropoffStopId(null)}
+                      className={`w-full flex items-center justify-between gap-3 rounded-lg border-2 px-4 py-3 text-left text-sm transition-colors ${
+                        dropoffStopId === null
+                          ? 'border-secondary-500 bg-secondary-50 dark:bg-secondary-900/20'
+                          : 'border-gray-200 dark:border-gray-700'
+                      }`}
+                    >
+                      <span className="font-medium text-gray-900 dark:text-white">
+                        Final Destination ({selectedRide.route.destination.name})
+                      </span>
+                      <span className="text-gray-500 dark:text-gray-400 shrink-0">{formatNaira(pickupValue)}</span>
+                    </button>
+                    {validDropoffStops.map((rs) => {
+                      const segmentFare = Math.max(pickupValue - (rs.fare ?? 0), 0);
+                      return (
+                        <button
+                          key={rs.id}
+                          type="button"
+                          onClick={() => setDropoffStopId(rs.stop.id)}
+                          className={`w-full flex items-center justify-between gap-3 rounded-lg border-2 px-4 py-3 text-left text-sm transition-colors ${
+                            dropoffStopId === rs.stop.id
+                              ? 'border-secondary-500 bg-secondary-50 dark:bg-secondary-900/20'
+                              : 'border-gray-200 dark:border-gray-700'
+                          }`}
+                        >
+                          <span className="font-medium text-gray-900 dark:text-white">{rs.stop.name}</span>
+                          <span className="text-gray-500 dark:text-gray-400 shrink-0">{formatNaira(segmentFare)}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -561,6 +648,7 @@ export function BookPage() {
                     setSelectedRide(null);
                     setSelectedSeats([]);
                     setPickupStopId(null);
+                    setDropoffStopId(null);
                     setStep('search');
                   }}
                 >

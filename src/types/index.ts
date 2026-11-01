@@ -148,6 +148,7 @@ export interface PayBookingLeg {
   ride_id: number;
   seat_numbers: string[];
   pickup_stop_id?: number | null;
+  dropoff_stop_id?: number | null;
 }
 
 export interface PayBookingResult {
