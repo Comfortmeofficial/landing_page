@@ -13,6 +13,10 @@ function apiErrorMessage(err: unknown, fallback: string): string {
 
 type Status = 'verifying' | 'success' | 'failed';
 
+// Same channel the waitlist form already links to (Footer.tsx, Contact.tsx).
+const WHATSAPP_CHANNEL_URL = 'https://whatsapp.com/channel/0029VbEENmW7dmeYfD5aN537';
+const WHATSAPP_REDIRECT_DELAY_MS = 4000;
+
 function viewTicketHref(reference: string | null) {
   return reference ? `/book/ticket?reference=${encodeURIComponent(reference)}` : '/book/ticket';
 }
@@ -65,6 +69,23 @@ export function BookConfirmPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Hands the guest off to the WhatsApp channel once checkout is actually
+  // done. This can't reuse the waitlist form's "open a new tab" trick
+  // (Contact.tsx) — that only works because it's called synchronously
+  // inside a click handler, and nothing here is a click: the browser lands
+  // on this page via a full-page redirect back from the payment gateway, so
+  // there's no user-gesture call stack to piggyback a window.open() on; it
+  // would just be silently blocked. Navigating this same tab has no such
+  // restriction, so that's what this does instead, after a short delay so
+  // the success message/ticket link below are still visible for a moment.
+  useEffect(() => {
+    if (status !== 'success') return;
+    const timer = setTimeout(() => {
+      window.location.href = WHATSAPP_CHANNEL_URL;
+    }, WHATSAPP_REDIRECT_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [status]);
+
   return (
     <main className="bg-white dark:bg-gray-900 pt-28 pb-24 min-h-screen flex items-center">
       <Container>
@@ -83,6 +104,9 @@ export function BookConfirmPage() {
               <h1 className="mt-6 text-xl font-bold text-gray-900 dark:text-white">You're booked!</h1>
               <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
                 Check your email for your ticket and receipt — your QR code is inside it.
+              </p>
+              <p className="mt-2 text-xs text-gray-400">
+                Taking you to our WhatsApp channel in a moment…
               </p>
               <Button variant="primary" size="lg" fullWidth className="mt-8">
                 <a href={viewTicketHref(reference)}>View my ticket</a>
