@@ -141,12 +141,17 @@ export function BookPage() {
     const groups: { main: Route; returnRoute: Route | null }[] = [];
     for (const route of routes) {
       if (consumed.has(route.id)) continue;
+      // location_id and destination_id point at two separate tables
+      // (locations/destinations) with independent id sequences — even the
+      // same physical place has a different id in each, so pairing has to
+      // match by name, the same way the backend's own findReturnRouteId
+      // does, not by comparing ids directly (which can never line up).
       const reverse = routes.find(
         (r) =>
           !consumed.has(r.id) &&
           r.id !== route.id &&
-          r.location.id === route.destination.id &&
-          r.destination.id === route.location.id,
+          r.location.name.toLowerCase() === route.destination.name.toLowerCase() &&
+          r.destination.name.toLowerCase() === route.location.name.toLowerCase(),
       );
       if (reverse) {
         const [main, returnRoute] = route.id < reverse.id ? [route, reverse] : [reverse, route];
