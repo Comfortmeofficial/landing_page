@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { ArrowLeftRight, ChevronLeft, Loader2, MapPin, Search, ShieldCheck, Users } from 'lucide-react';
+import { ArrowLeftRight, ChevronLeft, Loader2, MapPin, Plus, Search, ShieldCheck, Users, X } from 'lucide-react';
 import { Container } from '@/components/common/Container';
 import { Button } from '@/components/common/Button';
 import { SeatGrid } from '@/components/booking/SeatGrid';
@@ -30,6 +30,47 @@ function formatDateTime(iso: string) {
 
 function formatNaira(amount: number) {
   return `₦${amount.toLocaleString('en-NG')}`;
+}
+
+interface BookingLeg {
+  ride: Ride;
+  seats: RideSeat[];
+  pickupStopId: number | null;
+  farePerSeat: number;
+}
+
+// Shared between the seats step's "Trips so far" cart and the pay step's
+// final summary — onRemove is omitted on the pay step, where a leg can no
+// longer be dropped.
+function LegRow({ leg, onRemove }: { leg: BookingLeg; onRemove?: () => void }) {
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-lg bg-gray-50 dark:bg-gray-900/40 px-4 py-3">
+      <div className="min-w-0">
+        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+          {leg.ride.route.location.name} &rarr; {leg.ride.route.destination.name}
+        </p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">
+          {formatDateTime(leg.ride.departure_time)} &middot; Seat{leg.seats.length > 1 ? 's' : ''}:{' '}
+          {leg.seats.map((s) => s.seat_number).join(', ')}
+        </p>
+      </div>
+      <div className="flex items-center gap-3 shrink-0">
+        <span className="text-sm font-semibold text-gray-900 dark:text-white">
+          {formatNaira(leg.farePerSeat * leg.seats.length)}
+        </span>
+        {onRemove && (
+          <button
+            type="button"
+            onClick={onRemove}
+            aria-label="Remove trip"
+            className="text-gray-400 hover:text-red-500 transition-colors"
+          >
+            <X size={16} />
+          </button>
+        )}
+      </div>
+    </div>
+  );
 }
 
 type Step = 'search' | 'results' | 'seats' | 'details' | 'otp' | 'pay';
@@ -83,10 +124,15 @@ export function BookPage() {
   const [destination, setDestination] = useState('');
   const [results, setResults] = useState<Ride[]>([]);
 
-  // Ride + seats
+  // Ride + seats (the trip currently being picked)
   const [selectedRide, setSelectedRide] = useState<Ride | null>(null);
   const [selectedSeats, setSelectedSeats] = useState<RideSeat[]>([]);
   const [pickupStopId, setPickupStopId] = useState<number | null>(null);
+
+  // Trips already committed to this purchase (a return trip, say) — a
+  // guest checkout has no account to come back to later, so everything
+  // being bought together needs to go through in one payment.
+  const [legs, setLegs] = useState<BookingLeg[]>([]);
 
   // Guest identity
   const [guestForm, setGuestForm] = useState<GuestCheckoutForm>({
@@ -185,13 +231,27 @@ export function BookPage() {
 
   const selectedStop = selectedRide?.route.stops.find((s) => s.stop.id === pickupStopId) ?? null;
   const effectiveFare = selectedStop?.fare ?? selectedRide?.fare ?? 0;
-  const totalFare = effectiveFare * Math.max(selectedSeats.length, 1);
+  const currentLegFare = effectiveFare * Math.max(selectedSeats.length, 1);
+  const legsTotalFare = legs.reduce((sum, l) => sum + l.farePerSeat * l.seats.length, 0);
 
   const toggleSeat = (seat: RideSeat) => {
     setSelectedSeats((prev) =>
       prev.some((s) => s.id === seat.id) ? prev.filter((s) => s.id !== seat.id) : [...prev, seat],
     );
   };
+
+  // Commits the ride/seats/stop currently being picked as a leg of this
+  // purchase — de-duped by ride id (picking the same ride again just
+  // replaces the earlier entry), same as the mobile app's own cart.
+  const commitCurrentLeg = (): BookingLeg[] => {
+    if (!selectedRide || selectedSeats.length === 0) return legs;
+    const leg: BookingLeg = { ride: selectedRide, seats: selectedSeats, pickupStopId, farePerSeat: effectiveFare };
+    const next = [...legs.filter((l) => l.ride.id !== selectedRide.id), leg];
+    setLegs(next);
+    return next;
+  };
+
+  const removeLeg = (rideId: number) => setLegs((prev) => prev.filter((l) => l.ride.id !== rideId));
 
   const requestOtpMutation = useMutation({
     mutationFn: () => guestAuthApi.requestCode(guestForm.email),
@@ -241,10 +301,12 @@ export function BookPage() {
       return paymentApi.payBooking({
         user_id: session.userId,
         email: guestForm.email,
-        ride_id: selectedRide!.id,
-        seat_numbers: selectedSeats.map((s) => s.seat_number),
-        pickup_stop_id: pickupStopId,
-        amount: totalFare,
+        legs: legs.map((l) => ({
+          ride_id: l.ride.id,
+          seat_numbers: l.seats.map((s) => s.seat_number),
+          pickup_stop_id: l.pickupStopId,
+        })),
+        amount: legsTotalFare,
         payment_method: paymentMethod,
         callback_url: `${window.location.origin}/book/confirm`,
       });
@@ -400,6 +462,33 @@ export function BookPage() {
 
           {step === 'seats' && selectedRide && (
             <div className="space-y-6">
+              {legs.length > 0 && (
+                <div className="space-y-2">
+                  <label className={labelCls}>Trips so far</label>
+                  {legs.map((leg) => (
+                    <LegRow key={leg.ride.id} leg={leg} onRemove={() => removeLeg(leg.ride.id)} />
+                  ))}
+                </div>
+              )}
+
+              {selectedRide.route.stops.length > 0 && (
+                <div>
+                  <label className={labelCls}>Pickup Location</label>
+                  <select
+                    className={inputCls}
+                    value={pickupStopId ?? ''}
+                    onChange={(e) => setPickupStopId(e.target.value ? Number(e.target.value) : null)}
+                  >
+                    <option value="">Default ({selectedRide.route.location.name})</option>
+                    {selectedRide.route.stops.map((rs) => (
+                      <option key={rs.id} value={rs.stop.id}>
+                        {rs.stop.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               <div className="rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
                 {seatsLoading ? (
                   <div className="flex justify-center py-10">
@@ -419,18 +508,40 @@ export function BookPage() {
                 <p className="text-center text-sm text-gray-600 dark:text-gray-300">
                   Seat{selectedSeats.length > 1 ? 's' : ''}:{' '}
                   <strong>{selectedSeats.map((s) => s.seat_number).join(', ')}</strong> &middot;{' '}
-                  {formatNaira(selectedRide.fare * selectedSeats.length)}
+                  {formatNaira(currentLegFare)}
                 </p>
               )}
-              <Button
-                variant="primary"
-                size="lg"
-                fullWidth
-                disabled={selectedSeats.length === 0}
-                onClick={() => setStep('details')}
-              >
-                Continue
-              </Button>
+              <div className="space-y-3">
+                <Button
+                  variant="primary"
+                  size="lg"
+                  fullWidth
+                  disabled={selectedSeats.length === 0}
+                  onClick={() => {
+                    commitCurrentLeg();
+                    setStep('details');
+                  }}
+                >
+                  Continue to Checkout
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  fullWidth
+                  disabled={selectedSeats.length === 0}
+                  onClick={() => {
+                    commitCurrentLeg();
+                    setSelectedRide(null);
+                    setSelectedSeats([]);
+                    setPickupStopId(null);
+                    setStep('search');
+                  }}
+                >
+                  <Plus size={16} /> Add Another Trip
+                </Button>
+                <p className="text-center text-xs text-gray-400">e.g. your return trip</p>
+              </div>
             </div>
           )}
 
@@ -539,35 +650,16 @@ export function BookPage() {
             </form>
           )}
 
-          {step === 'pay' && selectedRide && (
+          {step === 'pay' && legs.length > 0 && (
             <div className="space-y-5 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-8 shadow-sm">
-              <div className="space-y-1 border-b border-gray-100 dark:border-gray-700 pb-4">
-                <p className="font-semibold text-gray-900 dark:text-white">
-                  {selectedRide.route.location.name} &rarr; {selectedRide.route.destination.name}
-                </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{formatDateTime(selectedRide.departure_time)}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Seat{selectedSeats.length > 1 ? 's' : ''}: {selectedSeats.map((s) => s.seat_number).join(', ')}
-                </p>
+              <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-5">
+                <label className={labelCls}>
+                  {legs.length > 1 ? `${legs.length} Trips` : 'Your Trip'}
+                </label>
+                {legs.map((leg) => (
+                  <LegRow key={leg.ride.id} leg={leg} />
+                ))}
               </div>
-
-              {selectedRide.route.stops.length > 0 && (
-                <div>
-                  <label className={labelCls}>Pickup Location</label>
-                  <select
-                    className={inputCls}
-                    value={pickupStopId ?? ''}
-                    onChange={(e) => setPickupStopId(e.target.value ? Number(e.target.value) : null)}
-                  >
-                    <option value="">Default ({selectedRide.route.location.name})</option>
-                    {selectedRide.route.stops.map((rs) => (
-                      <option key={rs.id} value={rs.stop.id}>
-                        {rs.stop.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
 
               <div>
                 <label className={labelCls}>Payment Method</label>
@@ -591,7 +683,7 @@ export function BookPage() {
 
               <div className="flex items-center justify-between border-t border-gray-100 dark:border-gray-700 pt-4">
                 <span className="text-sm text-gray-500 dark:text-gray-400">Total</span>
-                <span className="text-xl font-bold text-gray-900 dark:text-white">{formatNaira(totalFare)}</span>
+                <span className="text-xl font-bold text-gray-900 dark:text-white">{formatNaira(legsTotalFare)}</span>
               </div>
 
               <Button
@@ -609,7 +701,7 @@ export function BookPage() {
                     <Loader2 size={18} className="animate-spin" /> Starting payment…
                   </>
                 ) : (
-                  `Pay ${formatNaira(totalFare)}`
+                  `Pay ${formatNaira(legsTotalFare)}`
                 )}
               </Button>
               <p className="text-center text-xs text-gray-400">

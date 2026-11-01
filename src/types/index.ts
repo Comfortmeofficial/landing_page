@@ -144,6 +144,12 @@ export type GuestSessionResponse =
 
 export type PaymentMethod = 'debit_card' | 'bank_transfer';
 
+export interface PayBookingLeg {
+  ride_id: number;
+  seat_numbers: string[];
+  pickup_stop_id?: number | null;
+}
+
 export interface PayBookingResult {
   success: boolean;
   message: string;

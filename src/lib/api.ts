@@ -3,6 +3,7 @@ import type {
   Booking,
   GuestCheckoutForm,
   GuestSessionResponse,
+  PayBookingLeg,
   PayBookingResult,
   PaymentMethod,
   PaystackVerifyResult,
@@ -135,9 +136,7 @@ export const paymentApi = {
   payBooking: (payload: {
     user_id: number;
     email: string;
-    ride_id: number;
-    seat_numbers: string[];
-    pickup_stop_id?: number | null;
+    legs: PayBookingLeg[];
     amount: number;
     payment_method: PaymentMethod;
     callback_url: string;
