@@ -474,18 +474,41 @@ export function BookPage() {
               {selectedRide.route.stops.length > 0 && (
                 <div>
                   <label className={labelCls}>Pickup Location</label>
-                  <select
-                    className={inputCls}
-                    value={pickupStopId ?? ''}
-                    onChange={(e) => setPickupStopId(e.target.value ? Number(e.target.value) : null)}
-                  >
-                    <option value="">Default ({selectedRide.route.location.name})</option>
+                  <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                    <button
+                      type="button"
+                      onClick={() => setPickupStopId(null)}
+                      className={`w-full flex items-center justify-between gap-3 rounded-lg border-2 px-4 py-3 text-left text-sm transition-colors ${
+                        pickupStopId === null
+                          ? 'border-secondary-500 bg-secondary-50 dark:bg-secondary-900/20'
+                          : 'border-gray-200 dark:border-gray-700'
+                      }`}
+                    >
+                      <span className="font-medium text-gray-900 dark:text-white">
+                        Default ({selectedRide.route.location.name})
+                      </span>
+                      <span className="text-gray-500 dark:text-gray-400 shrink-0">
+                        {formatNaira(selectedRide.fare)}
+                      </span>
+                    </button>
                     {selectedRide.route.stops.map((rs) => (
-                      <option key={rs.id} value={rs.stop.id}>
-                        {rs.stop.name}
-                      </option>
+                      <button
+                        key={rs.id}
+                        type="button"
+                        onClick={() => setPickupStopId(rs.stop.id)}
+                        className={`w-full flex items-center justify-between gap-3 rounded-lg border-2 px-4 py-3 text-left text-sm transition-colors ${
+                          pickupStopId === rs.stop.id
+                            ? 'border-secondary-500 bg-secondary-50 dark:bg-secondary-900/20'
+                            : 'border-gray-200 dark:border-gray-700'
+                        }`}
+                      >
+                        <span className="font-medium text-gray-900 dark:text-white">{rs.stop.name}</span>
+                        <span className="text-gray-500 dark:text-gray-400 shrink-0">
+                          {rs.fare != null ? formatNaira(rs.fare) : formatNaira(selectedRide.fare)}
+                        </span>
+                      </button>
                     ))}
-                  </select>
+                  </div>
                 </div>
               )}
 
