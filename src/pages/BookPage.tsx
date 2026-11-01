@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { ChevronLeft, Loader2, MapPin, Search, ShieldCheck, Users } from 'lucide-react';
+import { ArrowLeftRight, ChevronLeft, Loader2, MapPin, Search, ShieldCheck, Users } from 'lucide-react';
 import { Container } from '@/components/common/Container';
 import { Button } from '@/components/common/Button';
 import { SeatGrid } from '@/components/booking/SeatGrid';
@@ -311,11 +311,14 @@ export function BookPage() {
               ) : (
                 <div className="space-y-3">
                   {filteredRouteGroups.map((group) => (
-                    <div key={group.main.id} className="space-y-2">
+                    <div
+                      key={group.main.id}
+                      className="rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm overflow-hidden"
+                    >
                       <button
                         disabled={searchMutation.isPending}
                         onClick={() => selectRoute(group.main)}
-                        className="w-full flex items-center gap-4 rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 text-left shadow-sm hover:border-secondary-300 transition-colors disabled:opacity-60"
+                        className="w-full flex items-center gap-4 p-5 text-left hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors disabled:opacity-60"
                       >
                         <MapPin size={20} className="text-secondary-500 shrink-0" />
                         <div className="flex-1 min-w-0">
@@ -335,10 +338,9 @@ export function BookPage() {
                         <button
                           disabled={searchMutation.isPending}
                           onClick={() => selectRoute(group.returnRoute!)}
-                          className="w-full ml-4 flex items-center gap-3 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 p-4 text-left hover:border-secondary-300 transition-colors disabled:opacity-60"
-                          style={{ width: 'calc(100% - 1rem)' }}
+                          className="w-full flex items-center gap-3 border-t border-gray-100 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-900/30 pl-8 pr-5 py-4 text-left hover:bg-gray-100 dark:hover:bg-gray-700/40 transition-colors disabled:opacity-60"
                         >
-                          <MapPin size={16} className="text-secondary-400 shrink-0" />
+                          <ArrowLeftRight size={16} className="text-secondary-400 shrink-0" />
                           <div className="flex-1 min-w-0">
                             <span className="inline-block text-[10px] font-semibold uppercase tracking-wider text-secondary-600 dark:text-secondary-400 bg-secondary-50 dark:bg-secondary-900/30 px-1.5 py-0.5 rounded">
                               Return Trip
@@ -346,6 +348,7 @@ export function BookPage() {
                             <p className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate mt-1">
                               {group.returnRoute.location.name} &rarr; {group.returnRoute.destination.name}
                             </p>
+                            <p className="text-xs text-gray-400 mt-0.5">{group.returnRoute.distance_km} km</p>
                           </div>
                           {searchMutation.isPending &&
                           location === group.returnRoute.location.name &&
