@@ -5,7 +5,9 @@ export function useDarkMode() {
     if (typeof window === 'undefined') return false;
     const stored = localStorage.getItem('theme');
     if (stored) return stored === 'dark';
-    return false;
+    // No explicit choice saved yet — default to whatever the OS/browser
+    // is already set to, rather than always starting in light mode.
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
   useEffect(() => {
