@@ -386,7 +386,7 @@ export function BookPage() {
                           <p className="font-semibold text-gray-900 dark:text-white truncate">
                             {group.main.location.name} &rarr; {group.main.destination.name}
                           </p>
-                          <p className="text-xs text-gray-400 mt-0.5">{group.main.distance_km} km</p>
+                          {/* <p className="text-xs text-gray-400 mt-0.5">{group.main.distance_km} km</p> */}
                         </div>
                         {searchMutation.isPending &&
                         location === group.main.location.name &&
@@ -409,7 +409,7 @@ export function BookPage() {
                             <p className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate mt-1">
                               {group.returnRoute.location.name} &rarr; {group.returnRoute.destination.name}
                             </p>
-                            <p className="text-xs text-gray-400 mt-0.5">{group.returnRoute.distance_km} km</p>
+                            {/* <p className="text-xs text-gray-400 mt-0.5">{group.returnRoute.distance_km} km</p> */}
                           </div>
                           {searchMutation.isPending &&
                           location === group.returnRoute.location.name &&
