@@ -55,11 +55,12 @@ export function Header() {
                 </span>
               </div>
               <Button variant="outline" size="md">
-                <a href="/book">Book a Trip</a>
-              </Button>
-              <Button variant="primary" size="md">
                 <a href="/#contact">Download the App</a>
               </Button>
+              <Button variant="primary" size="md">
+                <a href="/book">Book my Trip</a>
+              </Button>
+              
             </div>
 
             <div className="flex md:hidden items-center gap-2">
