@@ -60,12 +60,15 @@ export function Hero() {
               className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center"
             >
               <Button variant="primary" size="lg" className="bg-[#0B91F7] hover:bg-[#0A80E0] text-white">
+                <a href="/book">Book my trip</a>
+              </Button>
+              <Button variant="outline" size="lg" className="bg-[#0B91F7] hover:bg-[#0A80E0] text-white">
                 <a href="/#contact">Join the Waitlist</a>
               </Button>
-              <Button variant="outline" size="lg" onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}>
+              {/* <Button variant="outline" size="lg" onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}>
                 {/* <PlayCircle size={20} /> */}
-                 How It Works
-              </Button>
+                 {/* How It Works
+              </Button> */} 
             </motion.div>
 
             {/* Stats */}
