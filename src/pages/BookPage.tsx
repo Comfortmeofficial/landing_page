@@ -130,16 +130,54 @@ export function BookPage() {
     searchMutation.mutate({ location: route.location.name, destination: route.destination.name });
   };
 
-  const filteredRoutes = useMemo(() => {
-    const q = routeQuery.trim().toLowerCase();
-    if (!q) return routes;
-    return routes.filter(
-      (r) =>
-        r.location.name.toLowerCase().includes(q) ||
-        r.destination.name.toLowerCase().includes(q) ||
-        r.name.toLowerCase().includes(q),
+  // Routes have no explicit link to their reverse leg (createRoute on the
+  // backend always creates the admin's requested route first, then
+  // auto-generates the opposite-direction one right after as its own
+  // independent row) — so pairing them up here just means finding, for each
+  // route, another route whose location/destination are swapped, and
+  // treating whichever of the two has the lower id as the "main" trip.
+  const routeGroups = useMemo(() => {
+    const consumed = new Set<number>();
+    const groups: { main: Route; returnRoute: Route | null }[] = [];
+    for (const route of routes) {
+      if (consumed.has(route.id)) continue;
+      const reverse = routes.find(
+        (r) =>
+          !consumed.has(r.id) &&
+          r.id !== route.id &&
+          r.location.id === route.destination.id &&
+          r.destination.id === route.location.id,
+      );
+      if (reverse) {
+        const [main, returnRoute] = route.id < reverse.id ? [route, reverse] : [reverse, route];
+        groups.push({ main, returnRoute });
+        consumed.add(main.id);
+        consumed.add(returnRoute.id);
+      } else {
+        groups.push({ main: route, returnRoute: null });
+        consumed.add(route.id);
+      }
+    }
+    groups.sort(
+      (a, b) =>
+        a.main.location.name.localeCompare(b.main.location.name) ||
+        a.main.destination.name.localeCompare(b.main.destination.name),
     );
-  }, [routes, routeQuery]);
+    return groups;
+  }, [routes]);
+
+  const matchesRouteQuery = (r: Route, q: string) =>
+    r.location.name.toLowerCase().includes(q) ||
+    r.destination.name.toLowerCase().includes(q) ||
+    r.name.toLowerCase().includes(q);
+
+  const filteredRouteGroups = useMemo(() => {
+    const q = routeQuery.trim().toLowerCase();
+    if (!q) return routeGroups;
+    return routeGroups.filter(
+      (g) => matchesRouteQuery(g.main, q) || (g.returnRoute && matchesRouteQuery(g.returnRoute, q)),
+    );
+  }, [routeGroups, routeQuery]);
 
   const selectedStop = selectedRide?.route.stops.find((s) => s.stop.id === pickupStopId) ?? null;
   const effectiveFare = selectedStop?.fare ?? selectedRide?.fare ?? 0;
@@ -261,30 +299,57 @@ export function BookPage() {
                 <div className="flex justify-center py-12">
                   <Loader2 className="animate-spin text-secondary-500" />
                 </div>
-              ) : filteredRoutes.length === 0 ? (
+              ) : filteredRouteGroups.length === 0 ? (
                 <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-12">
                   {routeQuery ? 'No routes match your search.' : 'No routes are available right now.'}
                 </p>
               ) : (
                 <div className="space-y-3">
-                  {filteredRoutes.map((route) => (
-                    <button
-                      key={route.id}
-                      disabled={searchMutation.isPending}
-                      onClick={() => selectRoute(route)}
-                      className="w-full flex items-center gap-4 rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 text-left shadow-sm hover:border-secondary-300 transition-colors disabled:opacity-60"
-                    >
-                      <MapPin size={20} className="text-secondary-500 shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-gray-900 dark:text-white truncate">
-                          {route.location.name} &rarr; {route.destination.name}
-                        </p>
-                        <p className="text-xs text-gray-400 mt-0.5">{route.distance_km} km</p>
-                      </div>
-                      {searchMutation.isPending && location === route.location.name && destination === route.destination.name ? (
-                        <Loader2 size={18} className="animate-spin text-secondary-500 shrink-0" />
-                      ) : null}
-                    </button>
+                  {filteredRouteGroups.map((group) => (
+                    <div key={group.main.id} className="space-y-2">
+                      <button
+                        disabled={searchMutation.isPending}
+                        onClick={() => selectRoute(group.main)}
+                        className="w-full flex items-center gap-4 rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 text-left shadow-sm hover:border-secondary-300 transition-colors disabled:opacity-60"
+                      >
+                        <MapPin size={20} className="text-secondary-500 shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-gray-900 dark:text-white truncate">
+                            {group.main.location.name} &rarr; {group.main.destination.name}
+                          </p>
+                          <p className="text-xs text-gray-400 mt-0.5">{group.main.distance_km} km</p>
+                        </div>
+                        {searchMutation.isPending &&
+                        location === group.main.location.name &&
+                        destination === group.main.destination.name ? (
+                          <Loader2 size={18} className="animate-spin text-secondary-500 shrink-0" />
+                        ) : null}
+                      </button>
+
+                      {group.returnRoute && (
+                        <button
+                          disabled={searchMutation.isPending}
+                          onClick={() => selectRoute(group.returnRoute!)}
+                          className="w-full ml-4 flex items-center gap-3 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 p-4 text-left hover:border-secondary-300 transition-colors disabled:opacity-60"
+                          style={{ width: 'calc(100% - 1rem)' }}
+                        >
+                          <MapPin size={16} className="text-secondary-400 shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <span className="inline-block text-[10px] font-semibold uppercase tracking-wider text-secondary-600 dark:text-secondary-400 bg-secondary-50 dark:bg-secondary-900/30 px-1.5 py-0.5 rounded">
+                              Return Trip
+                            </span>
+                            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate mt-1">
+                              {group.returnRoute.location.name} &rarr; {group.returnRoute.destination.name}
+                            </p>
+                          </div>
+                          {searchMutation.isPending &&
+                          location === group.returnRoute.location.name &&
+                          destination === group.returnRoute.destination.name ? (
+                            <Loader2 size={16} className="animate-spin text-secondary-500 shrink-0" />
+                          ) : null}
+                        </button>
+                      )}
+                    </div>
                   ))}
                 </div>
               )}
