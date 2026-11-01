@@ -62,7 +62,7 @@ export function Hero() {
               <Button variant="primary" size="lg" className="bg-[#0B91F7] hover:bg-[#0A80E0] text-white">
                 <a href="/book">Book my trip</a>
               </Button>
-              <Button variant="outline" size="lg" className="bg-[#0B91F7] hover:bg-[#0A80E0] text-white">
+              <Button variant="outline" size="lg" >
                 <a href="/#contact">Join the Waitlist</a>
               </Button>
               {/* <Button variant="outline" size="lg" onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}>
