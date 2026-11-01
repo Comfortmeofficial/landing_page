@@ -474,6 +474,9 @@ export function BookPage() {
               {selectedRide.route.stops.length > 0 && (
                 <div>
                   <label className={labelCls}>Pickup Location</label>
+                  <p className="mb-2 -mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    We've made pickup easy — choose the stop along the route closest to you.
+                  </p>
                   <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
                     <button
                       type="button"
