@@ -593,26 +593,21 @@ export function BookPage() {
                       <span className="font-medium text-gray-900 dark:text-white">
                         Final Destination ({selectedRide.route.destination.name})
                       </span>
-                      <span className="text-gray-500 dark:text-gray-400 shrink-0">{formatNaira(pickupValue)}</span>
                     </button>
-                    {validDropoffStops.map((rs) => {
-                      const segmentFare = Math.max(pickupValue - (rs.fare ?? 0), 0);
-                      return (
-                        <button
-                          key={rs.id}
-                          type="button"
-                          onClick={() => setDropoffStopId(rs.stop.id)}
-                          className={`w-full flex items-center justify-between gap-3 rounded-lg border-2 px-4 py-3 text-left text-sm transition-colors ${
-                            dropoffStopId === rs.stop.id
-                              ? 'border-secondary-500 bg-secondary-50 dark:bg-secondary-900/20'
-                              : 'border-gray-200 dark:border-gray-700'
-                          }`}
-                        >
-                          <span className="font-medium text-gray-900 dark:text-white">{rs.stop.name}</span>
-                          <span className="text-gray-500 dark:text-gray-400 shrink-0">{formatNaira(segmentFare)}</span>
-                        </button>
-                      );
-                    })}
+                    {validDropoffStops.map((rs) => (
+                      <button
+                        key={rs.id}
+                        type="button"
+                        onClick={() => setDropoffStopId(rs.stop.id)}
+                        className={`w-full flex items-center justify-between gap-3 rounded-lg border-2 px-4 py-3 text-left text-sm transition-colors ${
+                          dropoffStopId === rs.stop.id
+                            ? 'border-secondary-500 bg-secondary-50 dark:bg-secondary-900/20'
+                            : 'border-gray-200 dark:border-gray-700'
+                        }`}
+                      >
+                        <span className="font-medium text-gray-900 dark:text-white">{rs.stop.name}</span>
+                      </button>
+                    ))}
                   </div>
                 </div>
               )}
