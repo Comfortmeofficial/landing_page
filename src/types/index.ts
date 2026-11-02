@@ -116,7 +116,7 @@ export interface Ride {
   fare: number;
   total_seats: number;
   booked_seats: number;
-  status: 'scheduled' | 'active' | 'completed' | 'cancelled';
+  status: 'scheduled' | 'boarding' | 'active' | 'completed' | 'cancelled';
   route: Route;
   driver_row?: number | null;
   driver_col?: number | null;

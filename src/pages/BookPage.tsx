@@ -169,10 +169,13 @@ export function BookPage() {
   const searchMutation = useMutation({
     mutationFn: (payload: { location: string; destination: string }) => bookingApi.search(payload),
     onSuccess: (rides) => {
-      // Ride status never auto-advances after departure, so departed rides
-      // must be filtered out client-side rather than trusting status alone
-      // (same fix already applied in the mobile app's own search screen).
-      setResults(rides.filter((r) => new Date(r.departure_time).getTime() > Date.now()));
+      // Ride status never auto-advances after departure, so a still-
+      // 'scheduled' ride whose time has passed (nobody ever started it) is
+      // filtered out client-side. A ride that's actually boarding/active
+      // stays bookable regardless of departure time — passengers boarding
+      // an already-running bus mid-route is the normal case here, and only
+      // End Ride (status='completed') should pull it from availability.
+      setResults(rides.filter((r) => r.status !== 'scheduled' || new Date(r.departure_time).getTime() > Date.now()));
       setStep('results');
     },
     onError: (err) => setError(apiErrorMessage(err, 'Could not search for trips. Please try again.')),
