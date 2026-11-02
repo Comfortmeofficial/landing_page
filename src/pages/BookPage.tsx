@@ -269,9 +269,14 @@ export function BookPage() {
 
   // Only stops downstream of the chosen pickup (by stop_order) are valid
   // drop-off points — "Final Destination" (no stop chosen) is always valid.
+  // A stop the marshal's already ticked off as passed isn't a valid
+  // drop-off either — the bus genuinely isn't going back to it.
   const validDropoffStops =
-    selectedRide?.route.stops.filter((s) => !selectedPickupStop || s.stop_order > selectedPickupStop.stop_order) ??
-    [];
+    selectedRide?.route.stops.filter(
+      (s) => !s.passed && (!selectedPickupStop || s.stop_order > selectedPickupStop.stop_order),
+    ) ?? [];
+
+  const availablePickupStops = selectedRide?.route.stops.filter((s) => !s.passed) ?? [];
 
   const toggleSeat = (seat: RideSeat) => {
     setSelectedSeats((prev) =>
@@ -525,23 +530,30 @@ export function BookPage() {
                     We've made pickup easy — choose the stop along the route closest to you.
                   </p>
                   <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
-                    <button
-                      type="button"
-                      onClick={() => selectPickupStop(null)}
-                      className={`w-full flex items-center justify-between gap-3 rounded-lg border-2 px-4 py-3 text-left text-sm transition-colors ${
-                        pickupStopId === null
-                          ? 'border-secondary-500 bg-secondary-50 dark:bg-secondary-900/20'
-                          : 'border-gray-200 dark:border-gray-700'
-                      }`}
-                    >
-                      <span className="font-medium text-gray-900 dark:text-white">
-                        Default ({selectedRide.route.location.name})
-                      </span>
-                      <span className="text-gray-500 dark:text-gray-400 shrink-0">
-                        {formatNaira(selectedRide.fare)}
-                      </span>
-                    </button>
-                    {selectedRide.route.stops.map((rs) => (
+                    {!selectedRide.origin_passed && (
+                      <button
+                        type="button"
+                        onClick={() => selectPickupStop(null)}
+                        className={`w-full flex items-center justify-between gap-3 rounded-lg border-2 px-4 py-3 text-left text-sm transition-colors ${
+                          pickupStopId === null
+                            ? 'border-secondary-500 bg-secondary-50 dark:bg-secondary-900/20'
+                            : 'border-gray-200 dark:border-gray-700'
+                        }`}
+                      >
+                        <span className="font-medium text-gray-900 dark:text-white">
+                          Default ({selectedRide.route.location.name})
+                        </span>
+                        <span className="text-gray-500 dark:text-gray-400 shrink-0">
+                          {formatNaira(selectedRide.fare)}
+                        </span>
+                      </button>
+                    )}
+                    {availablePickupStops.length === 0 && selectedRide.origin_passed && (
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        The bus has already passed every pickup point on this route.
+                      </p>
+                    )}
+                    {availablePickupStops.map((rs) => (
                       <button
                         key={rs.id}
                         type="button"

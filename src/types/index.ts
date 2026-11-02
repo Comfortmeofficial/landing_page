@@ -95,6 +95,9 @@ export interface RouteStop {
   stop_order: number;
   fare: number | null;
   stop: Stop;
+  // Ride-specific: whether the marshal has ticked this stop off as already
+  // passed, so it stops being offered as a pickup choice.
+  passed?: boolean;
 }
 
 export interface Route {
@@ -120,6 +123,9 @@ export interface Ride {
   route: Route;
   driver_row?: number | null;
   driver_col?: number | null;
+  // Whether the route's own starting point ("Default" pickup) has been
+  // ticked off as passed by the marshal on this ride.
+  origin_passed?: boolean;
 }
 
 export interface RideSeat {
