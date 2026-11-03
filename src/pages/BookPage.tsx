@@ -244,19 +244,16 @@ export function BookPage() {
   }, [routeGroups, routeQuery]);
 
   const selectedPickupStop = selectedRide?.route.stops.find((s) => s.stop.id === pickupStopId) ?? null;
-  const selectedDropoffStop = selectedRide?.route.stops.find((s) => s.stop.id === dropoffStopId) ?? null;
-  // route_stops.fare means "cost to ride from this stop to the route's
-  // final destination" (it replaces the base fare, never adds to it) — so
-  // a pickup->dropoff segment fare is simply the difference between the
-  // two: pickupValue already covers "pickup to the end", dropoffValue
-  // covers "dropoff to the end", and the remainder is "pickup to dropoff".
-  // Riding to the route's own final destination (no dropoff stop chosen)
-  // is dropoffValue = 0, which reduces this to exactly the pre-dropoff
-  // behavior. Clamped at 0 defensively in case stop fares aren't entered
-  // consistently (never actually negative in the normal case).
+  // Was pickupValue - dropoffValue, on the theory that route_stops.fare
+  // means "cost to ride from this stop to the route's final destination" —
+  // in practice admins enter each stop's own normal ticket price there
+  // instead, so two stops with the same entered price canceled out to a
+  // ₦0 charge. Until stop fares are re-entered (or the model changed) to
+  // actually mean that, charge the pickup fare alone and ignore drop-off
+  // for pricing — drop-off stays selectable and still travels with the
+  // booking for marshals/dispatch, it just no longer discounts the fare.
   const pickupValue = selectedPickupStop?.fare ?? selectedRide?.fare ?? 0;
-  const dropoffValue = selectedDropoffStop?.fare ?? 0;
-  const effectiveFare = Math.max(pickupValue - dropoffValue, 0);
+  const effectiveFare = pickupValue;
   const currentLegFare = effectiveFare * Math.max(selectedSeats.length, 1);
   const legsTotalFare = legs.reduce((sum, l) => sum + l.farePerSeat * l.seats.length, 0);
 
@@ -579,7 +576,7 @@ export function BookPage() {
                 <div>
                   <label className={labelCls}>Drop-off Location</label>
                   <p className="mb-2 -mt-1 text-xs text-gray-500 dark:text-gray-400">
-                    Getting off before {selectedRide.route.destination.name}? Choose where, and the fare adjusts.
+                    Getting off before {selectedRide.route.destination.name}? Let your driver and marshal know where.
                   </p>
                   <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
                     <button
