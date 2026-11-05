@@ -6,7 +6,7 @@ import { fadeInUp, staggerContainer } from '@/lib/utils';
 
 export function CTA() {
   return (
-    <section className="relative bg-gray-50 dark:bg-gray-900 py-32 overflow-hidden">
+    <section className="relative bg-gray-50 dark:bg-gray-900 py-20 sm:py-32 overflow-hidden">
       {/* Decorative illustrations */}
       <img
         src="/green-illustration.svg"

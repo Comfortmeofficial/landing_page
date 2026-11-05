@@ -55,7 +55,7 @@ export function ContactPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
           {/* Form */}
-          <div className="rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-8 shadow-sm">
+          <div className="rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 sm:p-8 shadow-sm">
             {sent ? (
               <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
                 <div className="h-14 w-14 rounded-full bg-secondary-50 dark:bg-secondary-900/30 flex items-center justify-center">

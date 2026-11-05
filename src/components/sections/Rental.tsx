@@ -3,7 +3,7 @@ import { fadeInUp } from '@/lib/utils';
 
 export function Rental() {
   return (
-    <section id="rental" className="bg-gray-50 dark:bg-gray-900 py-16 px-6 lg:px-8">
+    <section id="rental" className="bg-gray-50 dark:bg-gray-900 py-16 px-4 sm:px-6 lg:px-8">
       <motion.div
         variants={fadeInUp}
         initial="hidden"
@@ -14,7 +14,7 @@ export function Rental() {
         <div className="relative overflow-hidden rounded-3xl bg-[#7CAE7A]">
           <div className="flex flex-col lg:flex-row lg:items-center min-h-[260px]">
             {/* Left content */}
-            <div className="relative z-10 flex-1 px-10 py-12 lg:py-14 lg:px-14 max-w-xl">
+            <div className="relative z-10 flex-1 px-6 py-10 sm:px-10 sm:py-12 lg:py-14 lg:px-14 max-w-xl">
               <h2 className="text-3xl font-bold text-white sm:text-4xl leading-snug">
                 Need a bus for the weekend<span className="text-orange-500">?</span>
               </h2>

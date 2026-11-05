@@ -10,7 +10,7 @@ function FeatureItem({ feature, align }: { feature: Feature; align: 'left' | 'ri
   return (
     <motion.div
       variants={fadeInUp}
-      className={`flex flex-col ${isRight ? 'items-start text-left' : 'items-end text-right'} gap-3`}
+      className={`flex flex-col items-start text-left gap-3 ${isRight ? '' : 'lg:items-end lg:text-right'}`}
     >
       <div className="inline-flex rounded-xl bg-white p-3">
         <Icon size={22} className="text-[#7CAE7A]" />
@@ -44,7 +44,7 @@ export function Features() {
         <div className="absolute -right-16 bottom-1/3 h-48 w-48 skew-y-6 rounded-2xl bg-white/5" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

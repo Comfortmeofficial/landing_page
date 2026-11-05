@@ -674,7 +674,7 @@ export function BookPage() {
                 setError(null);
                 startSessionMutation.mutate();
               }}
-              className="space-y-5 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-8 shadow-sm"
+              className="space-y-5 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 sm:p-8 shadow-sm"
             >
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 No account needed — just enough to send your ticket to.
@@ -740,7 +740,7 @@ export function BookPage() {
                 setError(null);
                 verifyOtpMutation.mutate();
               }}
-              className="space-y-5 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-8 shadow-sm"
+              className="space-y-5 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 sm:p-8 shadow-sm"
             >
               <div className="flex items-start gap-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 p-4">
                 <ShieldCheck size={18} className="text-secondary-500 shrink-0 mt-0.5" />
@@ -784,7 +784,7 @@ export function BookPage() {
           )}
 
           {step === 'pay' && legs.length > 0 && (
-            <div className="space-y-5 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-8 shadow-sm">
+            <div className="space-y-5 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 sm:p-8 shadow-sm">
               <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-5">
                 <label className={labelCls}>
                   {legs.length > 1 ? `${legs.length} Trips` : 'Your Trip'}

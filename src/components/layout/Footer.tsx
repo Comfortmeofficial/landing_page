@@ -149,7 +149,7 @@ export function Footer() {
                 </a>
               ))}
             </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 text-right leading-relaxed">
+            <p className="text-sm text-gray-500 dark:text-gray-400 text-left lg:text-right leading-relaxed">
               Stay connected for updates, launch news, insights, and everything shaping the future of everyday mobility.
             </p>
           </div>

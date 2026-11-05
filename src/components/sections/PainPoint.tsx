@@ -24,7 +24,7 @@ export function PainPoint() {
       <div className="absolute inset-0 bg-black/65" aria-hidden />
 
       {/* Content */}
-      <div className="relative z-10 flex min-h-[70vh] flex-col items-center justify-center px-6 py-32 text-center">
+      <div className="relative z-10 flex min-h-[60vh] sm:min-h-[70vh] flex-col items-center justify-center px-4 sm:px-6 py-20 sm:py-32 text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}

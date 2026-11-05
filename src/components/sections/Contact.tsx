@@ -191,7 +191,7 @@ export function Contact() {
             whileInView="visible"
             viewport={{ once: true }}
           >
-            <div className="rounded-2xl bg-white dark:bg-gray-800 p-8 shadow-sm ring-1 ring-gray-200 dark:ring-gray-700">
+            <div className="rounded-2xl bg-white dark:bg-gray-800 p-5 sm:p-8 shadow-sm ring-1 ring-gray-200 dark:ring-gray-700">
               {submitted ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center gap-4">
                   <CheckCircle size={48} className="text-green-500" />

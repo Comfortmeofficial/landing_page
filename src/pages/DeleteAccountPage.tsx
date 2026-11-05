@@ -69,7 +69,7 @@ export function DeleteAccountPage() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-8 shadow-sm">
+          <div className="rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 sm:p-8 shadow-sm">
             {step === 'done' ? (
               <div className="flex flex-col items-center justify-center py-8 text-center gap-3">
                 <div className="h-14 w-14 rounded-full bg-green-50 dark:bg-green-900/20 flex items-center justify-center">

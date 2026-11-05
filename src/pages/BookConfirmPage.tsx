@@ -89,7 +89,7 @@ export function BookConfirmPage() {
   return (
     <main className="bg-white dark:bg-gray-900 pt-28 pb-24 min-h-screen flex items-center">
       <Container>
-        <div className="mx-auto max-w-md rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-10 text-center shadow-sm">
+        <div className="mx-auto max-w-md rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 sm:p-10 text-center shadow-sm">
           {status === 'verifying' && (
             <>
               <Loader2 size={48} className="mx-auto animate-spin text-secondary-500" />

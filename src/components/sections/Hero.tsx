@@ -20,8 +20,8 @@ export function Hero() {
         <div className="absolute bottom-0 right-0 w-48 h-48 rounded-full bg-primary-100/50 dark:bg-primary-900/20" />
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center min-h-[calc(90vh-4rem)] py-16 lg:py-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center lg:min-h-[calc(90vh-4rem)] py-12 sm:py-16 lg:py-24">
           {/* Left column */}
           <motion.div
             variants={staggerContainer}
@@ -74,12 +74,12 @@ export function Hero() {
             {/* Stats */}
             <motion.div
               variants={fadeInUp}
-              className="mt-12 flex items-start gap-10"
+              className="mt-10 sm:mt-12 flex flex-wrap items-start gap-6 sm:gap-10"
             >
               {stats.map((stat) => (
-                <div key={stat.label}>
-                  <p className="text-5xl font-black text-[#FFCD01]">{stat.value}</p>
-                  <p className="mt-1 text-base text-gray-500 dark:text-gray-400">{stat.label}</p>
+                <div key={stat.label} className="max-w-[140px] sm:max-w-none">
+                  <p className="text-3xl sm:text-5xl font-black text-[#FFCD01]">{stat.value}</p>
+                  <p className="mt-1 text-sm sm:text-base text-gray-500 dark:text-gray-400">{stat.label}</p>
                 </div>
               ))}
             </motion.div>
