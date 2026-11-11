@@ -9,6 +9,10 @@ import { navLinks } from '@/data/navigation';
 import { useDarkMode } from '@/hooks/useDarkMode';
 import { getUserSession } from '@/lib/userSession';
 
+// Hidden until the Saturday launch — flip to true to bring the nav's
+// login/account entry point back.
+const SHOW_LOGIN_BUTTON = false;
+
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -65,13 +69,15 @@ export function Header() {
                   {isDark ? 'Switch to light mode' : 'Switch to dark mode'}
                 </span>
               </div>
-              <a
-                href={firstName ? '/account' : '/login'}
-                className="flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
-              >
-                <UserCircle2 size={18} />
-                {firstName ?? 'Log in'}
-              </a>
+              {SHOW_LOGIN_BUTTON && (
+                <a
+                  href={firstName ? '/account' : '/login'}
+                  className="flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
+                >
+                  <UserCircle2 size={18} />
+                  {firstName ?? 'Log in'}
+                </a>
+              )}
               <Button variant="outline" size="md">
                 <a href="/#contact">Download the App</a>
               </Button>
@@ -116,14 +122,16 @@ export function Header() {
           >
             <Navigation links={navLinks} mobile onLinkClick={() => setIsOpen(false)} />
             <div className="mt-6 border-t border-gray-100 dark:border-gray-800 pt-6 space-y-3">
-              <a
-                href={firstName ? '/account' : '/login'}
-                onClick={() => setIsOpen(false)}
-                className="flex items-center justify-center gap-1.5 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
-              >
-                <UserCircle2 size={18} />
-                {firstName ?? 'Log in'}
-              </a>
+              {SHOW_LOGIN_BUTTON && (
+                <a
+                  href={firstName ? '/account' : '/login'}
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center justify-center gap-1.5 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
+                >
+                  <UserCircle2 size={18} />
+                  {firstName ?? 'Log in'}
+                </a>
+              )}
               <Button variant="outline" size="lg" fullWidth>
                 <a href="/book" onClick={() => setIsOpen(false)}>Book a Trip</a>
               </Button>
