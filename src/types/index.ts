@@ -149,6 +149,31 @@ export type GuestSessionResponse =
   | { requires_verification: true }
   | { requires_verification: false; access_token: string; refresh_token: string; user_id: number };
 
+export interface SignupForm {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  password: string;
+}
+
+export interface LoginTokens {
+  access_token: string;
+  refresh_token: string;
+  user_id: number;
+}
+
+// Trimmed to the fields the website actually uses — the backend's UserDto
+// carries several more (emergency contact, push token, …) that only the
+// mobile app's own account screens touch.
+export interface UserProfileDto {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string | null;
+}
+
 export type PaymentMethod = 'debit_card' | 'bank_transfer';
 
 export interface PayBookingLeg {

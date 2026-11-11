@@ -3,6 +3,7 @@ import type {
   Booking,
   GuestCheckoutForm,
   GuestSessionResponse,
+  LoginTokens,
   PayBookingLeg,
   PayBookingResult,
   PaymentMethod,
@@ -11,9 +12,12 @@ import type {
   Ride,
   RideSeat,
   Route,
+  SignupForm,
+  UserProfileDto,
   WaitlistFormData,
 } from '@/types';
 import { clearGuestSession, getGuestSession, saveGuestSession } from './guestSession';
+import { clearUserSession, getUserSession, saveUserSession } from './userSession';
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL ?? '',
@@ -23,15 +27,16 @@ export const api = axios.create({
   timeout: 10_000,
 });
 
-// The guest's access token is short-lived (15 minutes) — fine for a normal
-// checkout, but someone who steps away mid-flow and comes back would
-// otherwise hit a 401 on whatever they do next with no way to recover
-// short of starting over. Mirrors customer_mobile_app's own refresh-on-401
-// interceptor: only acts on a request that actually carried a guest
-// session's Authorization header (so it never touches the public endpoints
-// — waitlist, policies, account deletion — this same client also serves),
-// and only retries once per request to avoid looping on a truly dead
-// refresh token.
+// The access token (guest or real login) is short-lived (15 minutes) —
+// fine for a normal checkout, but someone who steps away mid-flow and
+// comes back would otherwise hit a 401 on whatever they do next with no
+// way to recover short of starting over. Mirrors customer_mobile_app's own
+// refresh-on-401 interceptor: only acts on a request that actually carried
+// a session's Authorization header (so it never touches the public
+// endpoints — waitlist, policies, account deletion — this same client also
+// serves), and only retries once per request to avoid looping on a truly
+// dead refresh token. A real login takes priority over a leftover guest
+// session, matching authHeader()'s own priority below.
 api.interceptors.response.use(
   (res) => res,
   async (error) => {
@@ -39,18 +44,25 @@ api.interceptors.response.use(
     const hadAuthHeader = !!original?.headers?.Authorization;
     if (error.response?.status === 401 && hadAuthHeader && !original._retry) {
       original._retry = true;
-      const session = getGuestSession();
+      const userSession = getUserSession();
+      const guestSession = !userSession ? getGuestSession() : null;
+      const session = userSession ?? guestSession;
       if (session) {
         try {
           const { data } = await axios.post(`${api.defaults.baseURL}/api/v1/auth/refresh`, {
             refresh_token: session.refreshToken,
           });
           const tokens = data.data as { access_token: string; refresh_token: string };
-          saveGuestSession({ ...session, accessToken: tokens.access_token, refreshToken: tokens.refresh_token });
+          if (userSession) {
+            saveUserSession({ ...userSession, accessToken: tokens.access_token, refreshToken: tokens.refresh_token });
+          } else if (guestSession) {
+            saveGuestSession({ ...guestSession, accessToken: tokens.access_token, refreshToken: tokens.refresh_token });
+          }
           original.headers.Authorization = `Bearer ${tokens.access_token}`;
           return api(original);
         } catch {
-          clearGuestSession();
+          if (userSession) clearUserSession();
+          else clearGuestSession();
         }
       }
     }
@@ -125,13 +137,48 @@ export const guestAuthApi = {
 };
 
 // authHeader() is passed explicitly per-call (not a global interceptor on
-// `api`) so the guest's token only ever goes out on the booking/payment
-// calls that actually need it, never on the unrelated public endpoints
-// (waitlist, policies, account deletion) this same client also serves.
+// `api`) so the token only ever goes out on the booking/payment calls that
+// actually need it, never on the unrelated public endpoints (waitlist,
+// policies, account deletion) this same client also serves. A real login
+// takes priority — if someone is logged in, every booking is theirs, not a
+// one-off guest purchase, even if a stale guest session is still sitting
+// in sessionStorage from before they signed in.
 function authHeader(): Record<string, string> {
-  const session = getGuestSession();
+  const session = getUserSession() ?? getGuestSession();
   return session ? { Authorization: `Bearer ${session.accessToken}` } : {};
 }
+
+// ─── Real accounts (login/signup) ───────────────────────────────────────
+//
+// Same backend endpoints the mobile app's own signup/login already use —
+// this isn't a second auth system, just a second client for the one that
+// exists. Signup mirrors the mobile flow exactly: create the (unverified)
+// account, send a signup-purpose OTP, verify it to get back real tokens.
+export const authApi = {
+  login: (email: string, password: string) =>
+    api.post<{ data: LoginTokens }>('/api/v1/auth/login', { email, password }).then((r) => r.data.data),
+  signup: (data: SignupForm) =>
+    api
+      .post<{ data: { id: number; user_id: number; email: string } }>('/api/v1/auth/signup', {
+        first_name: data.firstName,
+        last_name: data.lastName,
+        email: data.email,
+        phone: data.phone,
+        password: data.password,
+      })
+      .then((r) => r.data.data),
+  sendSignupOtp: (email: string) => api.post('/api/v1/auth/send-otp', { email, purpose: 'signup' }),
+  verifySignupOtp: (email: string, otp: string) =>
+    api
+      .post<{ data: LoginTokens }>('/api/v1/auth/verify-otp', { email, otp, purpose: 'signup' })
+      .then((r) => r.data.data),
+  logout: (refreshToken: string) => api.post('/api/v1/auth/logout', { refresh_token: refreshToken }),
+};
+
+export const userApi = {
+  getByEmail: (email: string) =>
+    api.get<UserProfileDto>(`/api/v1/users/by-email/${encodeURIComponent(email)}`).then((r) => r.data),
+};
 
 export const paymentApi = {
   payBooking: (payload: {

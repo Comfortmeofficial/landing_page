@@ -1,16 +1,27 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, Moon, Sun } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import { Menu, X, Moon, Sun, UserCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Logo } from '@/components/common/Logo';
 import { Button } from '@/components/common/Button';
 import { Navigation } from '@/components/layout/Navigation';
 import { navLinks } from '@/data/navigation';
 import { useDarkMode } from '@/hooks/useDarkMode';
+import { getUserSession } from '@/lib/userSession';
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { isDark, toggle } = useDarkMode();
+  const location = useLocation();
+  // Re-read on every route change rather than once — there's no global
+  // auth store on this site, and login/signup/logout always navigate
+  // afterward, so this is the one reliable moment to notice the session
+  // changed.
+  const [firstName, setFirstName] = useState<string | null>(null);
+  useEffect(() => {
+    setFirstName(getUserSession()?.firstName ?? null);
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 16);
@@ -54,13 +65,19 @@ export function Header() {
                   {isDark ? 'Switch to light mode' : 'Switch to dark mode'}
                 </span>
               </div>
+              <a
+                href={firstName ? '/account' : '/login'}
+                className="flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
+              >
+                <UserCircle2 size={18} />
+                {firstName ?? 'Log in'}
+              </a>
               <Button variant="outline" size="md">
                 <a href="/#contact">Download the App</a>
               </Button>
               <Button variant="primary" size="md">
                 <a href="/book">Book my Trip</a>
               </Button>
-              
             </div>
 
             <div className="flex md:hidden items-center gap-2">
@@ -99,6 +116,14 @@ export function Header() {
           >
             <Navigation links={navLinks} mobile onLinkClick={() => setIsOpen(false)} />
             <div className="mt-6 border-t border-gray-100 dark:border-gray-800 pt-6 space-y-3">
+              <a
+                href={firstName ? '/account' : '/login'}
+                onClick={() => setIsOpen(false)}
+                className="flex items-center justify-center gap-1.5 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
+              >
+                <UserCircle2 size={18} />
+                {firstName ?? 'Log in'}
+              </a>
               <Button variant="outline" size="lg" fullWidth>
                 <a href="/book" onClick={() => setIsOpen(false)}>Book a Trip</a>
               </Button>

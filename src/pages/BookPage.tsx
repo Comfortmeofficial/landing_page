@@ -4,8 +4,9 @@ import { ArrowLeftRight, ChevronLeft, Loader2, MapPin, Plus, Search, ShieldCheck
 import { Container } from '@/components/common/Container';
 import { Button } from '@/components/common/Button';
 import { SeatGrid } from '@/components/booking/SeatGrid';
-import { bookingApi, guestAuthApi, paymentApi, routesApi } from '@/lib/api';
+import { authApi, bookingApi, guestAuthApi, paymentApi, routesApi, userApi } from '@/lib/api';
 import { getGuestSession, saveGuestSession } from '@/lib/guestSession';
+import { getUserSession, saveUserSession } from '@/lib/userSession';
 import type { GuestCheckoutForm, PaymentMethod, Ride, RideSeat, Route } from '@/types';
 
 const inputCls =
@@ -152,6 +153,15 @@ export function BookPage() {
     phone: '',
   });
   const [otp, setOtp] = useState('');
+
+  // An already-logged-in visitor never sees the guest form at all (handled
+  // where "Continue to Checkout" is clicked, below); this is only for
+  // someone mid-guest-checkout who realizes they'd rather log in than
+  // retype details they've already saved. Kept inline rather than a
+  // separate page navigation so seat selection isn't lost.
+  const [showInlineLogin, setShowInlineLogin] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
 
   // Payment
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('debit_card');
@@ -342,13 +352,41 @@ export function BookPage() {
     onError: (err) => setError(apiErrorMessage(err, 'That code is invalid or has expired.')),
   });
 
+  const loginMutation = useMutation({
+    mutationFn: async () => {
+      const tokens = await authApi.login(loginEmail.trim(), loginPassword);
+      const profile = await userApi.getByEmail(loginEmail.trim());
+      return { tokens, profile };
+    },
+    onSuccess: ({ tokens, profile }) => {
+      setError(null);
+      saveUserSession({
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
+        userId: tokens.user_id,
+        firstName: profile.first_name,
+        lastName: profile.last_name,
+        email: profile.email,
+        phone: profile.phone ?? '',
+      });
+      setStep('pay');
+    },
+    onError: (err) => setError(apiErrorMessage(err, 'Could not sign you in. Check your email and password.')),
+  });
+
   const payMutation = useMutation({
     mutationFn: () => {
-      const session = getGuestSession();
-      if (!session) throw new Error('Session expired');
+      // A real login takes priority — matches authHeader()'s own priority
+      // in api.ts, so the token this sends and the identity it pays under
+      // always agree.
+      const userSession = getUserSession();
+      const guestSession = !userSession ? getGuestSession() : null;
+      const userId = userSession?.userId ?? guestSession?.userId;
+      const email = userSession?.email ?? guestForm.email;
+      if (userId === undefined) throw new Error('Session expired');
       return paymentApi.payBooking({
-        user_id: session.userId,
-        email: guestForm.email,
+        user_id: userId,
+        email,
         legs: legs.map((l) => ({
           ride_id: l.ride.id,
           seat_numbers: l.seats.map((s) => s.seat_number),
@@ -386,7 +424,7 @@ export function BookPage() {
                     : step === 'otp'
                       ? () => setStep('details')
                       : step === 'pay'
-                        ? () => setStep('details')
+                        ? () => setStep(getUserSession() ? 'seats' : 'details')
                         : undefined
             }
           />
@@ -640,7 +678,10 @@ export function BookPage() {
                   disabled={selectedSeats.length === 0}
                   onClick={() => {
                     commitCurrentLeg();
-                    setStep('details');
+                    // Already logged in — their name/email/phone are
+                    // already on file, so skip straight past the guest form
+                    // instead of asking for them again.
+                    setStep(getUserSession() ? 'pay' : 'details');
                   }}
                 >
                   Continue to Checkout
@@ -667,7 +708,58 @@ export function BookPage() {
             </div>
           )}
 
-          {step === 'details' && (
+          {step === 'details' && showInlineLogin && (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                setError(null);
+                loginMutation.mutate();
+              }}
+              className="space-y-5 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 sm:p-8 shadow-sm"
+            >
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Log in to skip straight to payment — your saved details cover the rest.
+              </p>
+              <div>
+                <label className={labelCls}>Email Address</label>
+                <input
+                  type="email"
+                  className={inputCls}
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className={labelCls}>Password</label>
+                <input
+                  type="password"
+                  className={inputCls}
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <Button type="submit" variant="primary" size="lg" fullWidth disabled={loginMutation.isPending}>
+                {loginMutation.isPending ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" /> Signing in…
+                  </>
+                ) : (
+                  'Log in and continue'
+                )}
+              </Button>
+              <button
+                type="button"
+                onClick={() => { setShowInlineLogin(false); setError(null); }}
+                className="w-full text-center text-xs text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white"
+              >
+                Continue as guest instead
+              </button>
+            </form>
+          )}
+
+          {step === 'details' && !showInlineLogin && (
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -677,7 +769,14 @@ export function BookPage() {
               className="space-y-5 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 sm:p-8 shadow-sm"
             >
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                No account needed — just enough to send your ticket to.
+                No account needed — just enough to send your ticket to.{' '}
+                <button
+                  type="button"
+                  onClick={() => { setShowInlineLogin(true); setError(null); }}
+                  className="font-semibold text-secondary-500 hover:text-secondary-600"
+                >
+                  Already have an account? Log in
+                </button>
               </p>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>

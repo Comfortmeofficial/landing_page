@@ -11,6 +11,9 @@ import { DeleteAccountPage } from '@/pages/DeleteAccountPage';
 import { BookPage } from '@/pages/BookPage';
 import { BookConfirmPage } from '@/pages/BookConfirmPage';
 import { BookTicketPage } from '@/pages/BookTicketPage';
+import { LoginPage } from '@/pages/LoginPage';
+import { SignupPage } from '@/pages/SignupPage';
+import { AccountPage } from '@/pages/AccountPage';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },
@@ -32,6 +35,9 @@ export default function App() {
             <Route path="/book" element={<BookPage />} />
             <Route path="/book/confirm" element={<BookConfirmPage />} />
             <Route path="/book/ticket" element={<BookTicketPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/account" element={<AccountPage />} />
           </Routes>
           <Footer />
         </div>
