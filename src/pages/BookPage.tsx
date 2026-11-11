@@ -162,6 +162,11 @@ export function BookPage() {
   const [showInlineLogin, setShowInlineLogin] = useState(false);
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
+  // Same recovery path as LoginPage's own needsVerification: a login
+  // attempt for an account that was created but never finished OTP
+  // verification gets a 403, not a dead end.
+  const [needsInlineVerification, setNeedsInlineVerification] = useState(false);
+  const [inlineOtp, setInlineOtp] = useState('');
 
   // Payment
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('debit_card');
@@ -371,7 +376,36 @@ export function BookPage() {
       });
       setStep('pay');
     },
-    onError: (err) => setError(apiErrorMessage(err, 'Could not sign you in. Check your email and password.')),
+    onError: (err) => {
+      if ((err as { response?: { status?: number } })?.response?.status === 403) {
+        setNeedsInlineVerification(true);
+        authApi.sendSignupOtp(loginEmail.trim()).catch(() => {});
+        return;
+      }
+      setError(apiErrorMessage(err, 'Could not sign you in. Check your email and password.'));
+    },
+  });
+
+  const verifyInlineOtpMutation = useMutation({
+    mutationFn: async () => {
+      const tokens = await authApi.verifySignupOtp(loginEmail.trim(), inlineOtp.trim());
+      const profile = await userApi.getByEmail(loginEmail.trim());
+      return { tokens, profile };
+    },
+    onSuccess: ({ tokens, profile }) => {
+      setError(null);
+      saveUserSession({
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
+        userId: tokens.user_id,
+        firstName: profile.first_name,
+        lastName: profile.last_name,
+        email: profile.email,
+        phone: profile.phone ?? '',
+      });
+      setStep('pay');
+    },
+    onError: (err) => setError(apiErrorMessage(err, 'Could not verify that code. Please try again.')),
   });
 
   const payMutation = useMutation({
@@ -708,7 +742,50 @@ export function BookPage() {
             </div>
           )}
 
-          {step === 'details' && showInlineLogin && (
+          {step === 'details' && showInlineLogin && needsInlineVerification && (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                setError(null);
+                verifyInlineOtpMutation.mutate();
+              }}
+              className="space-y-5 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 sm:p-8 shadow-sm"
+            >
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                We've sent a code to <strong>{loginEmail}</strong> to finish setting up your account.
+              </p>
+              <div>
+                <label className={labelCls}>Verification Code</label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="123456"
+                  className={inputCls}
+                  value={inlineOtp}
+                  onChange={(e) => setInlineOtp(e.target.value)}
+                  required
+                />
+              </div>
+              <Button type="submit" variant="primary" size="lg" fullWidth disabled={verifyInlineOtpMutation.isPending}>
+                {verifyInlineOtpMutation.isPending ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" /> Verifying…
+                  </>
+                ) : (
+                  'Verify and continue'
+                )}
+              </Button>
+              <button
+                type="button"
+                onClick={() => authApi.sendSignupOtp(loginEmail.trim())}
+                className="w-full text-center text-xs text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white"
+              >
+                Resend code
+              </button>
+            </form>
+          )}
+
+          {step === 'details' && showInlineLogin && !needsInlineVerification && (
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -751,7 +828,7 @@ export function BookPage() {
               </Button>
               <button
                 type="button"
-                onClick={() => { setShowInlineLogin(false); setError(null); }}
+                onClick={() => { setShowInlineLogin(false); setNeedsInlineVerification(false); setInlineOtp(''); setError(null); }}
                 className="w-full text-center text-xs text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white"
               >
                 Continue as guest instead
