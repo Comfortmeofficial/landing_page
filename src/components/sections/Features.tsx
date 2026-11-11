@@ -25,7 +25,7 @@ function FeatureItem({ feature, align }: { feature: Feature; align: 'left' | 'ri
 
 export function Features() {
   return (
-    <section id="features" className="relative bg-secondary-500 dark:bg-primary-600 pb-24 pt-10">
+    <section id="features" className="relative overflow-x-hidden bg-secondary-500 dark:bg-primary-600 pb-24 pt-10">
       {/* Wave transition from hero — light mode */}
       <div className="absolute top-0 left-0 right-0 dark:hidden" aria-hidden>
         <svg viewBox="0 0 1440 80" preserveAspectRatio="none" className="h-20 w-full" xmlns="http://www.w3.org/2000/svg">
