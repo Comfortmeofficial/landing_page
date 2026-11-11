@@ -3,6 +3,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
 import { Container } from '@/components/common/Container';
 import { Button } from '@/components/common/Button';
+import { PasswordInput } from '@/components/common/PasswordInput';
 import { authApi, userApi } from '@/lib/api';
 import { saveUserSession } from '@/lib/userSession';
 
@@ -161,11 +162,9 @@ export function LoginPage() {
               </div>
               <div>
                 <label className={labelCls}>Password</label>
-                <input
-                  type="password"
+                <PasswordInput
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={inputCls}
                   required
                 />
               </div>

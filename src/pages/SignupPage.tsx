@@ -3,6 +3,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { UserPlus } from 'lucide-react';
 import { Container } from '@/components/common/Container';
 import { Button } from '@/components/common/Button';
+import { PasswordInput } from '@/components/common/PasswordInput';
 import { authApi } from '@/lib/api';
 import { saveUserSession } from '@/lib/userSession';
 import type { SignupForm } from '@/types';
@@ -28,6 +29,7 @@ export function SignupPage() {
 
   const [step, setStep] = useState<Step>('details');
   const [form, setForm] = useState<SignupForm>(emptyForm);
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,6 +37,10 @@ export function SignupPage() {
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    if (form.password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
     setLoading(true);
     try {
       await authApi.signup(form);
@@ -133,11 +139,18 @@ export function SignupPage() {
                 </div>
                 <div>
                   <label className={labelCls}>Password</label>
-                  <input
-                    type="password"
-                    className={inputCls}
+                  <PasswordInput
                     value={form.password}
                     onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+                    minLength={8}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className={labelCls}>Confirm Password</label>
+                  <PasswordInput
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                     minLength={8}
                     required
                   />
