@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { UserCircle2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { Loader2, UserCircle2 } from 'lucide-react';
 import { Container } from '@/components/common/Container';
 import { Button } from '@/components/common/Button';
-import { authApi } from '@/lib/api';
+import { TicketCard } from '@/components/booking/TicketCard';
+import { authApi, myBookingsApi } from '@/lib/api';
 import { clearUserSession, getUserSession, type UserSession } from '@/lib/userSession';
 
 export function AccountPage() {
@@ -33,6 +35,12 @@ export function AccountPage() {
     clearUserSession();
     navigate('/', { replace: true });
   }
+
+  const { data: bookings, isLoading: bookingsLoading } = useQuery({
+    queryKey: ['my-bookings', session?.userId],
+    queryFn: () => myBookingsApi.list(session!.userId),
+    enabled: !!session,
+  });
 
   if (!session) return null;
 
@@ -79,6 +87,25 @@ export function AccountPage() {
             <Button variant="outline" size="lg" fullWidth onClick={handleLogout}>
               Log out
             </Button>
+          </div>
+
+          <div className="mt-10">
+            <h2 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">Booking History</h2>
+            {bookingsLoading ? (
+              <div className="flex justify-center py-10">
+                <Loader2 className="animate-spin text-secondary-500" />
+              </div>
+            ) : bookings && bookings.length > 0 ? (
+              <div className="space-y-4">
+                {bookings.map((b) => (
+                  <TicketCard key={b.id} booking={b} />
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-6">
+                No bookings yet — once you book a trip, it'll show up here.
+              </p>
+            )}
           </div>
         </div>
       </Container>

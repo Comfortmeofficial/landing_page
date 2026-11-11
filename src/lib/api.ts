@@ -207,3 +207,14 @@ export const ticketApi = {
   getByReference: (reference: string) =>
     api.get<Booking[]>(`/api/v1/bookings/group/${reference}`).then((r) => r.data),
 };
+
+// A logged-in account's own booking history — the same endpoint the mobile
+// app's "Trip History" uses. Requires the caller's own bearer token (the
+// backend 403s if the token's user id doesn't match `user_id`), unlike
+// ticketApi above which is deliberately public.
+export const myBookingsApi = {
+  list: (userId: number) =>
+    api
+      .get<Booking[]>('/api/v1/bookings', { params: { user_id: userId, limit: 50 }, headers: authHeader() })
+      .then((r) => r.data),
+};
