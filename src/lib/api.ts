@@ -211,10 +211,17 @@ export const ticketApi = {
 // A logged-in account's own booking history — the same endpoint the mobile
 // app's "Trip History" uses. Requires the caller's own bearer token (the
 // backend 403s if the token's user id doesn't match `user_id`), unlike
-// ticketApi above which is deliberately public.
+// ticketApi above which is deliberately public. skip/limit mirror the
+// backend's own pagination (newest first, no total count returned — the
+// caller infers "is there a next page" from whether a full page came back).
 export const myBookingsApi = {
-  list: (userId: number) =>
+  list: (userId: number, skip: number, limit: number) =>
     api
-      .get<Booking[]>('/api/v1/bookings', { params: { user_id: userId, limit: 50 }, headers: authHeader() })
+      .get<Booking[]>('/api/v1/bookings', { params: { user_id: userId, skip, limit }, headers: authHeader() })
       .then((r) => r.data),
+  // A single booking's full detail, by its own reference — same "the
+  // reference is itself the credential" model as ticketApi, so no auth
+  // header needed even though this is reached from inside the account.
+  getByReference: (reference: string) =>
+    api.get<Booking>(`/api/v1/bookings/reference/${reference}`).then((r) => r.data),
 };

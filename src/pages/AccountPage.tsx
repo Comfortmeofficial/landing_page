@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Loader2, UserCircle2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Loader2, UserCircle2 } from 'lucide-react';
 import { Container } from '@/components/common/Container';
 import { Button } from '@/components/common/Button';
 import { TicketCard } from '@/components/booking/TicketCard';
@@ -36,11 +36,19 @@ export function AccountPage() {
     navigate('/', { replace: true });
   }
 
-  const { data: bookings, isLoading: bookingsLoading } = useQuery({
-    queryKey: ['my-bookings', session?.userId],
-    queryFn: () => myBookingsApi.list(session!.userId),
+  const PAGE_SIZE = 5;
+  const [page, setPage] = useState(0);
+
+  const { data: bookings, isLoading: bookingsLoading, isPlaceholderData } = useQuery({
+    queryKey: ['my-bookings', session?.userId, page],
+    queryFn: () => myBookingsApi.list(session!.userId, page * PAGE_SIZE, PAGE_SIZE),
     enabled: !!session,
+    placeholderData: (previous) => previous,
   });
+
+  // The backend doesn't return a total count, just a page of rows — a full
+  // page back is the only signal there might be another one.
+  const hasNextPage = (bookings?.length ?? 0) === PAGE_SIZE;
 
   if (!session) return null;
 
@@ -91,16 +99,37 @@ export function AccountPage() {
 
           <div className="mt-10">
             <h2 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">Booking History</h2>
-            {bookingsLoading ? (
+            {bookingsLoading && !bookings ? (
               <div className="flex justify-center py-10">
                 <Loader2 className="animate-spin text-secondary-500" />
               </div>
             ) : bookings && bookings.length > 0 ? (
-              <div className="space-y-4">
-                {bookings.map((b) => (
-                  <TicketCard key={b.id} booking={b} />
-                ))}
-              </div>
+              <>
+                <div className={`space-y-4 transition-opacity ${isPlaceholderData ? 'opacity-50' : ''}`}>
+                  {bookings.map((b) => (
+                    <TicketCard key={b.id} booking={b} linkTo={`/bookings/${b.reference}`} />
+                  ))}
+                </div>
+                <div className="mt-5 flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() => setPage((p) => Math.max(0, p - 1))}
+                    disabled={page === 0}
+                    className="inline-flex items-center gap-1 text-sm font-medium text-gray-600 dark:text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed hover:text-gray-900 dark:hover:text-white"
+                  >
+                    <ChevronLeft size={16} /> Previous
+                  </button>
+                  <span className="text-xs text-gray-400">Page {page + 1}</span>
+                  <button
+                    type="button"
+                    onClick={() => setPage((p) => p + 1)}
+                    disabled={!hasNextPage}
+                    className="inline-flex items-center gap-1 text-sm font-medium text-gray-600 dark:text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed hover:text-gray-900 dark:hover:text-white"
+                  >
+                    Next <ChevronRight size={16} />
+                  </button>
+                </div>
+              </>
             ) : (
               <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-6">
                 No bookings yet — once you book a trip, it'll show up here.

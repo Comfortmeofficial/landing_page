@@ -1,7 +1,8 @@
+import { Link } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
 import type { Booking } from '@/types';
 
-function formatDateTime(iso: string) {
+export function formatDateTime(iso: string) {
   return new Date(iso).toLocaleString('en-NG', {
     weekday: 'short',
     day: 'numeric',
@@ -11,7 +12,7 @@ function formatDateTime(iso: string) {
   });
 }
 
-const STATUS_LABEL: Record<Booking['status'], string> = {
+export const STATUS_LABEL: Record<Booking['status'], string> = {
   pending: 'Pending',
   confirmed: 'Upcoming',
   completed: 'Completed',
@@ -26,9 +27,13 @@ function ticketPayload(booking: Booking) {
   return `CMBOOKING:${booking.id}:${booking.reference}`;
 }
 
-export function TicketCard({ booking }: { booking: Booking }) {
-  return (
-    <div className="rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm flex flex-col sm:flex-row items-center gap-6">
+// `linkTo` is opt-in — BookTicketPage's public lookup already shows the
+// one booking someone searched for, so it renders the plain (non-clickable)
+// card; only the account page's history list, where a tap should drill
+// into that booking's fuller detail, passes it.
+export function TicketCard({ booking, linkTo }: { booking: Booking; linkTo?: string }) {
+  const content = (
+    <>
       <div className="shrink-0 rounded-lg bg-white p-3">
         <QRCodeSVG value={ticketPayload(booking)} size={120} />
       </div>
@@ -49,6 +54,18 @@ export function TicketCard({ booking }: { booking: Booking }) {
           {STATUS_LABEL[booking.status]}
         </span>
       </div>
-    </div>
+    </>
   );
+
+  const cardCls =
+    'rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm flex flex-col sm:flex-row items-center gap-6';
+
+  if (linkTo) {
+    return (
+      <Link to={linkTo} className={`${cardCls} transition-colors hover:border-secondary-300`}>
+        {content}
+      </Link>
+    );
+  }
+  return <div className={cardCls}>{content}</div>;
 }

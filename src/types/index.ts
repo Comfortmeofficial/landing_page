@@ -205,10 +205,17 @@ export interface Booking {
   reference: string;
   group_reference: string;
   seat_number: string;
+  amount: number;
+  discount_amount: number;
   final_amount: number;
+  coupon_code: string;
   payment_method: string;
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
   is_on_board: boolean;
+  pickup_stop_id: number | null;
+  dropoff_stop_id: number | null;
+  rating: number | null;
+  rating_comment: string | null;
   ride: Ride;
   created_at: string;
 }
