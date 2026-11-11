@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/logo-light.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Without this, iOS Safari auto-links any plain text that looks like
+         a phone number or email (e.g. the account page's own email/phone)
+         into a tap-to-call/email link with the default underline — not an
+         actual <a>, just Safari's own styling on top of ordinary text. -->
+    <meta name="format-detection" content="telephone=no, email=no, address=no" />
     <meta name="description" content="Comfortme – Book your daily bus rides, reserve multiple seats, schedule trips ahead of time, and enjoy discounted fares through subscriptions, all from one simple app." />
     <meta name="keywords" content="bus booking, commute, transportation, ride scheduling, subscription" />
     <meta property="og:title" content="Comfortme – Travel Smarter, Ride Comfortably" />

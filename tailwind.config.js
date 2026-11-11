@@ -31,6 +31,20 @@ export default {
           800: '#2660A8',
           900: '#14488B',
         },
+        // The mobile app's own Colors.primary (#125EF2) — a distinctly
+        // deeper, more saturated blue than `secondary` above. Scoped to its
+        // own token rather than changing `secondary` itself, since that one
+        // drives the whole marketing site's buttons/accents and this is
+        // only meant for the account/login/signup pages that now need to
+        // actually look like the app they're an account for.
+        app: {
+          DEFAULT: '#125EF2',
+          50: '#E8F0FC',
+          100: '#CBE0FA',
+          500: '#125EF2',
+          600: '#0F4FCB',
+          700: '#0C40A4',
+        },
         navy: {
           DEFAULT: '#0E1F33',
           50: '#F3F4F5',

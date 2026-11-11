@@ -53,7 +53,7 @@ export function BookingDetailPage() {
 
           {isLoading && (
             <div className="flex justify-center py-16">
-              <Loader2 className="animate-spin text-secondary-500" />
+              <Loader2 className="animate-spin text-app-500" />
             </div>
           )}
 
@@ -74,7 +74,7 @@ export function BookingDetailPage() {
                   className={`mt-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${
                     booking.status === 'cancelled'
                       ? 'bg-red-50 text-red-600 dark:bg-red-900/20'
-                      : 'bg-secondary-50 text-secondary-600 dark:bg-secondary-900/20'
+                      : 'bg-app-50 text-app-600 dark:bg-app-900/20'
                   }`}
                 >
                   {STATUS_LABEL[booking.status]}

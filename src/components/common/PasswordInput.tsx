@@ -1,9 +1,7 @@
 import { useState, type InputHTMLAttributes } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-const inputCls =
-  'w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 pr-11 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-secondary-500 focus:outline-none focus:ring-2 focus:ring-secondary-500/20 transition';
+import { authInputCls } from '@/lib/authStyles';
 
 // A plain password <input> plus the show/hide toggle every password field
 // on this site needs — kept as one component so the eye icon's position
@@ -12,7 +10,7 @@ export function PasswordInput({ className, ...props }: InputHTMLAttributes<HTMLI
   const [visible, setVisible] = useState(false);
   return (
     <div className="relative">
-      <input type={visible ? 'text' : 'password'} className={cn(inputCls, className)} {...props} />
+      <input type={visible ? 'text' : 'password'} className={cn(authInputCls, 'pr-11', className)} {...props} />
       <button
         type="button"
         onClick={() => setVisible((v) => !v)}

@@ -1,12 +1,52 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ChevronLeft, ChevronRight, Loader2, UserCircle2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Loader2, LogOut, Ticket } from 'lucide-react';
 import { Container } from '@/components/common/Container';
-import { Button } from '@/components/common/Button';
 import { TicketCard } from '@/components/booking/TicketCard';
 import { authApi, myBookingsApi } from '@/lib/api';
 import { clearUserSession, getUserSession, type UserSession } from '@/lib/userSession';
+
+// A single list row inside a section — icon, label, chevron — matching the
+// mobile app's own Account screen menu items (customer_mobile_app's
+// src/app/(app)/account/index.tsx) rather than this site's usual big
+// bordered buttons.
+function MenuRow({
+  icon,
+  label,
+  to,
+  onClick,
+  danger,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  to?: string;
+  onClick?: () => void;
+  danger?: boolean;
+}) {
+  const content = (
+    <>
+      <span className="flex items-center gap-3.5">
+        <span className={danger ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'}>{icon}</span>
+        <span className={`text-sm font-medium ${danger ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'}`}>
+          {label}
+        </span>
+      </span>
+      <ChevronRight size={18} className={danger ? 'text-red-300 dark:text-red-500' : 'text-gray-300 dark:text-gray-600'} />
+    </>
+  );
+  const rowCls =
+    'flex w-full items-center justify-between border-t border-gray-100 dark:border-gray-800 py-3.5 first:border-t-0';
+  return to ? (
+    <Link to={to} className={rowCls}>
+      {content}
+    </Link>
+  ) : (
+    <button type="button" onClick={onClick} className={rowCls}>
+      {content}
+    </button>
+  );
+}
 
 export function AccountPage() {
   const navigate = useNavigate();
@@ -53,64 +93,61 @@ export function AccountPage() {
   if (!session) return null;
 
   return (
-    <main className="bg-white dark:bg-gray-900 pt-28 pb-24">
+    <main className="bg-gray-50 dark:bg-gray-950 pt-20 pb-24 min-h-screen">
       <Container>
-        <div className="mx-auto max-w-lg">
-          <div className="text-center mb-10">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-secondary-50 dark:bg-secondary-900/20">
-              <UserCircle2 size={24} className="text-secondary-500" />
+        <div className="mx-auto max-w-sm">
+          {/* User card — avatar + name/email/phone, left-aligned, same
+              shape as the app's own user card at the top of Account. */}
+          <div className="flex items-center gap-3.5 rounded-[10px] bg-white dark:bg-gray-800 p-4">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-app-500">
+              <span className="text-2xl font-bold text-white">{session.firstName?.[0]?.toUpperCase() ?? 'U'}</span>
             </div>
-            <h1 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-              My Account
-            </h1>
-          </div>
-
-          <div className="rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 sm:p-8 shadow-sm space-y-5">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                Name
-              </p>
-              <p className="mt-1 text-sm text-gray-900 dark:text-white">
+            <div className="min-w-0">
+              <p className="truncate text-[17px] font-bold text-gray-900 dark:text-white">
                 {session.firstName} {session.lastName}
               </p>
-            </div>
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                Email
-              </p>
-              <p className="mt-1 text-sm text-gray-900 dark:text-white">{session.email}</p>
-            </div>
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                Phone
-              </p>
-              <p className="mt-1 text-sm text-gray-900 dark:text-white">{session.phone || '—'}</p>
+              <p className="truncate text-[13px] text-gray-500 dark:text-gray-400">{session.email}</p>
+              <p className="truncate text-[13px] text-gray-500 dark:text-gray-400">{session.phone || '—'}</p>
             </div>
           </div>
 
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <Button variant="primary" size="lg" fullWidth>
-              <Link to="/book">Book a Trip</Link>
-            </Button>
-            <Button variant="outline" size="lg" fullWidth onClick={handleLogout}>
-              Log out
-            </Button>
+          <div className="mt-2 rounded-[10px] bg-white dark:bg-gray-800 px-4">
+            <p className="pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+              My Account
+            </p>
+            <MenuRow icon={<Ticket size={20} />} label="Book a Trip" to="/book" />
           </div>
 
-          <div className="mt-10">
-            <h2 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">Booking History</h2>
+          <div className="mt-2 rounded-[10px] bg-white dark:bg-gray-800 px-4">
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="flex w-full items-center justify-between py-3.5"
+            >
+              <span className="flex items-center gap-3.5">
+                <LogOut size={20} className="text-red-600 dark:text-red-400" />
+                <span className="text-sm font-medium text-red-600 dark:text-red-400">Log Out</span>
+              </span>
+              <ChevronRight size={18} className="text-red-300 dark:text-red-500" />
+            </button>
+          </div>
+
+          <div className="mt-8">
+            <p className="mb-3 text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+              Booking History
+            </p>
             {bookingsLoading && !bookings ? (
               <div className="flex justify-center py-10">
-                <Loader2 className="animate-spin text-secondary-500" />
+                <Loader2 className="animate-spin text-app-500" />
               </div>
             ) : bookings && bookings.length > 0 ? (
               <>
-                <div className={`space-y-4 transition-opacity ${isPlaceholderData ? 'opacity-50' : ''}`}>
+                <div className={`space-y-3 transition-opacity ${isPlaceholderData ? 'opacity-50' : ''}`}>
                   {bookings.map((b) => (
                     <TicketCard key={b.id} booking={b} linkTo={`/bookings/${b.reference}`} />
                   ))}
                 </div>
-                <div className="mt-5 flex items-center justify-between">
+                <div className="mt-4 flex items-center justify-between">
                   <button
                     type="button"
                     onClick={() => setPage((p) => Math.max(0, p - 1))}
@@ -131,7 +168,7 @@ export function AccountPage() {
                 </div>
               </>
             ) : (
-              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-6">
+              <p className="rounded-[10px] bg-white dark:bg-gray-800 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
                 No bookings yet — once you book a trip, it'll show up here.
               </p>
             )}

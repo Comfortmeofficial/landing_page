@@ -1,16 +1,10 @@
 import { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { LogIn } from 'lucide-react';
 import { Container } from '@/components/common/Container';
-import { Button } from '@/components/common/Button';
 import { PasswordInput } from '@/components/common/PasswordInput';
 import { authApi, userApi } from '@/lib/api';
 import { saveUserSession } from '@/lib/userSession';
-
-const inputCls =
-  'w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-secondary-500 focus:outline-none focus:ring-2 focus:ring-secondary-500/20 transition';
-
-const labelCls = 'mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400';
+import { authInputCls, authLabelCls, authButtonCls } from '@/lib/authStyles';
 
 function apiErrorMessage(err: unknown, fallback: string): string {
   const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
@@ -98,80 +92,72 @@ export function LoginPage() {
   }
 
   return (
-    <main className="bg-white dark:bg-gray-900 pt-28 pb-24">
+    <main className="bg-white dark:bg-gray-900 pt-24 pb-24 min-h-screen">
       <Container>
-        <div className="mx-auto max-w-lg">
-          <div className="text-center mb-10">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-secondary-50 dark:bg-secondary-900/20">
-              <LogIn size={24} className="text-secondary-500" />
-            </div>
-            <h1 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-              {needsVerification ? 'Verify your email' : 'Welcome back'}
-            </h1>
-            <p className="mt-4 text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-              {needsVerification
-                ? `We've sent a code to ${email.trim()} to finish setting up your account.`
-                : 'Log in to book without retyping your details every time.'}
-            </p>
-          </div>
+        <div className="mx-auto max-w-sm">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            {needsVerification ? 'Verify your email' : 'Welcome Back, Rider'}
+          </h1>
+          <p className="mt-2 mb-7 text-sm text-gray-500 dark:text-gray-400">
+            {needsVerification
+              ? `We've sent a code to ${email.trim()} to finish setting up your account.`
+              : "Your seat is waiting. Let's get you where you need to go."}
+          </p>
 
           {needsVerification ? (
-            <form
-              onSubmit={handleVerify}
-              className="space-y-5 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 sm:p-8 shadow-sm"
-            >
+            <form onSubmit={handleVerify} className="space-y-4">
               <div>
-                <label className={labelCls}>Verification Code</label>
+                <label className={authLabelCls}>Verification Code</label>
                 <input
                   type="text"
                   inputMode="numeric"
                   placeholder="123456"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
-                  className={inputCls}
+                  className={authInputCls}
                   required
                 />
               </div>
               {otpError && <p className="text-sm text-red-600 dark:text-red-400">{otpError}</p>}
-              <Button type="submit" variant="primary" size="lg" fullWidth disabled={otpLoading}>
+              <button type="submit" className={authButtonCls} disabled={otpLoading}>
                 {otpLoading ? 'Verifying…' : 'Verify and continue'}
-              </Button>
+              </button>
               <button
                 type="button"
                 onClick={() => authApi.sendSignupOtp(email.trim())}
-                className="w-full text-center text-xs text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white transition-colors"
+                className="w-full text-center text-sm text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white"
               >
                 Resend code
               </button>
             </form>
           ) : (
-            <form
-              onSubmit={handleSubmit}
-              className="space-y-5 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 sm:p-8 shadow-sm"
-            >
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className={labelCls}>Email Address</label>
+                <label className={authLabelCls}>Email Address</label>
                 <input
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder="Johndoe@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={inputCls}
+                  className={authInputCls}
                   required
                 />
               </div>
               <div>
-                <label className={labelCls}>Password</label>
+                <label className={authLabelCls}>Password</label>
                 <PasswordInput
+                  placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
               </div>
               {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
-              <Button type="submit" variant="primary" size="lg" fullWidth disabled={loading}>
-                {loading ? 'Signing in…' : 'Log in'}
-              </Button>
+              <div className="pt-2">
+                <button type="submit" className={authButtonCls} disabled={loading}>
+                  {loading ? 'Signing in…' : 'Sign In'}
+                </button>
+              </div>
             </form>
           )}
 
@@ -179,13 +165,13 @@ export function LoginPage() {
             <>
               <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
                 Don't have an account?{' '}
-                <Link to="/signup" className="font-semibold text-secondary-500 hover:text-secondary-600">
-                  Sign up
+                <Link to="/signup" className="font-semibold text-app-500 hover:text-app-600">
+                  Create Account
                 </Link>
               </p>
               <p className="mt-2 text-center text-sm text-gray-500 dark:text-gray-400">
                 Just here for one trip?{' '}
-                <Link to="/book" className="font-semibold text-secondary-500 hover:text-secondary-600">
+                <Link to="/book" className="font-semibold text-app-500 hover:text-app-600">
                   Book as a guest
                 </Link>
               </p>
